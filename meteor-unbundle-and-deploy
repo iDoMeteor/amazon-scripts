@@ -1,0 +1,108 @@
+#!/bin/bash -
+#===============================================================================
+#
+#          FILE: meteor-unbundle-and-deploy.sh
+#
+#         USAGE: meteor-unbundle-and-deploy.sh -b bundle-name [-v]
+#                meteor-unbundle-and-deploy.sh --bundle bundle-name [--verbose]
+#
+#   DESCRIPTION: This script untars a tarball bundled by Meteor to a temporary
+#                 location, runs node install & prune, and then replaces an
+#                 existing bundle with the new one.
+#                Once this is complete, the script will restart the app's
+#                 Passenger process and remove's the temporary directory.
+#                It is left to the user to remove the replaced bundle, which
+#                 will be renamed bundle.old.
+#                This script will generally be run automatically by the remote
+#                 developer's meteor-bundle-and-send script.
+#       OPTIONS:
+#                -b | --bundle
+#                   The name of your bundle, <bundle-name>.tar.gz.
+#                   I recommend making them descriptive and versioned, so
+#                    that you can easily switch versions in emergencies.
+#                -v | --verbose
+#                   If passed, will show all commands executed.
+#  REQUIREMENTS: Node 0.10.40, Passenger
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jason White (Jason@iDoAWS.com),
+#  ORGANIZATION: @iDoAWS
+#       CREATED: 04/12/2016 12:08
+#      REVISION:  001
+#===============================================================================
+
+# Exit on failure and treat unset variables as an error
+set -e
+set -o nounset
+set -x
+
+cd ~/www
+
+APP_DIR=`pwd`
+RESTART_ARGS=
+
+# Parse command line arguments into variables
+while :
+do
+    case "$1" in
+      -b | --bundle)
+    BUNDLE="$2"
+    shift 2
+    ;;
+      -v | --verbose)
+    VERBOSE=true
+    shift 1
+    ;;
+      -*)
+    echo "Error: Unknown option: $1" >&2
+    exit 1
+    ;;
+      *)  # No more options
+    break
+    ;;
+    esac
+done
+
+# Validate required arguments
+if [ !$BUNDLE ] ; then
+  echo 'Bundle name is required.'
+  exit 1
+fi
+
+# Check for verbosity
+if $VERBOSE ; then
+  set -v
+fi
+
+# Extract newly uploaded package
+if [ -d ./tmp ] ; then
+  rm -rf ./tmp
+fi
+mkdir -p tmp
+cd tmp
+tar xzf ../$BUNDLE.tar.gz
+rm -f ../$BUNDLE.tar.gz
+
+# Install dependencies
+cd bundle/programs/server
+node install --production
+node prune --production
+
+# Copy over persistent files for standalone mode, jic
+if [ -e $APP_DIR/bundle/Passengerfile.json ]; then
+  cp $APP_DIR/bundle/Passengerfile.json $APP_DIR/tmp/bundle/
+fi
+
+# Switch directories, restart app
+cd $APP_DIR
+mv bundle bundle.old
+mv tmp/bundle bundle
+passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
+rm -rf tmp
+
+cd
+
+# End
+echo "Remote tasks complete.  App has been deployed and Passenger process re-started."
+echo "Manually confirm the app is running, then remove ~/www/bundle.old."
+exit 0
