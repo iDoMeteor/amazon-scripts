@@ -106,7 +106,6 @@ if [ -n "$VERBOSE" ] ; then
 fi
 
 # Bundle to temporary directory
-run cd "$APP_DIR"
 run meteor bundle --directory $TEMP_DIR
 
 # Install dependencies
