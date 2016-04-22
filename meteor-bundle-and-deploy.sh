@@ -54,10 +54,10 @@ function run()
 }
 
 # Parse command line arguments into variables
-if [ -f "$1/.meteor" ] ; then
+if [ -d "$1/.meteor" ] ; then
   APP_DIR=$1
   shift 1
-elif [ -f ./.meteor ] ; then
+elif [ -d ./.meteor ] ; then
   APP_DIR='.'
 else
   echo "You must supply a valid Meteor app directory."
