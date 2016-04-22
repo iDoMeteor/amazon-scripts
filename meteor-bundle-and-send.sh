@@ -78,7 +78,7 @@ else
   KEYARG=
 fi
 
-run meteor bundle ../$BUNDLE.tar.gz
+run /usr/local/bin/meteor bundle ../$BUNDLE.tar.gz
 run scp $KEYARG ../$BUNDLE.tar.gz $SERVER:www/
 run scp $KEYARG scripts/meteor-unbundle-and-deploy.sh $SERVER:
 run ssh $KEYARG $SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
