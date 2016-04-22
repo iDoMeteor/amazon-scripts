@@ -123,14 +123,19 @@ fi
 cd ~/www
 if [ -d ./bundle ] ; then
   mv bundle bundle.old
+  PRIOR=true
 fi
 mv $TEMP_DIR ./bundle
-passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
+if [ -n "$PRIOR" ] ; then
+  sudo passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
+else
+  sudo service nginx restart
+fi
 rm -rf $TEMP_DIR
 
 cd
 
 # End
-echo "Tasks complete.  App has been deployed and Passenger process re-started."
+echo "Tasks complete.  App has been deployed and (re)loaded."
 echo "Manually confirm the app is running, then remove ~/www/bundle.old."
 exit 0
