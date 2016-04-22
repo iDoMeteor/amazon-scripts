@@ -87,7 +87,7 @@ done
 
 # Set default temporary location if required
 if [ ! -n "$TEMP_DIR" ] ; then
-  TEMP_DIR = ~/www/tmp
+  TEMP_DIR="~/www/tmp"
 fi
 
 # Set default temporary location if required
