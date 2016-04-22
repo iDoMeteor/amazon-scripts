@@ -54,7 +54,7 @@ function run()
 }
 
 # Parse command line arguments into variables
-if [ -f $1/.meteor ] ; then
+if [ -f "$1/.meteor" ] ; then
   APP_DIR=$1
   shift 1
 elif [ -f ./.meteor ] ; then
