@@ -92,7 +92,6 @@ done
 # Set default temporary location if required
 if [ ! -n "$TEMP_DIR" ] ; then
   TEMP_DIR=~/www/tmp
-  echo "Temp dir is: $TEMP_DIR"
 fi
 
 # Set default temporary location if required
