@@ -110,7 +110,7 @@ run meteor bundle --directory $TEMP_DIR
 
 # Install dependencies
 run cd $TEMP_DIR
-run cd bundle/programs/server
+run cd programs/server
 npm install --production
 npm prune --production
 
@@ -122,7 +122,7 @@ fi
 # Switch directories, restart app
 cd ~/www
 mv bundle bundle.old
-mv $TEMP_DIR/bundle bundle
+mv $TEMP_DIR ./bundle
 passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
 rm -rf $TEMP_DIR
 
