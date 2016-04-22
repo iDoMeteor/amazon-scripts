@@ -103,7 +103,7 @@ fi
 
 # Bundle to temporary directory
 cd $APP_DIR
-run meteor bundle -directory $TEMP_DIR
+run meteor bundle --directory $TEMP_DIR
 
 # Install dependencies
 cd $TEMP_DIR
