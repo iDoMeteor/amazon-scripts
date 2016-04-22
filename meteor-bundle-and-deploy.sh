@@ -87,7 +87,7 @@ done
 
 # Set default temporary location if required
 if [ ! -n "$TEMP_DIR" ] ; then
-  TEMP_DIR="~/www/tmp"
+  TEMP_DIR=~/www/tmp
 fi
 
 # Set default temporary location if required
@@ -102,12 +102,12 @@ if [ -n "$VERBOSE" ] ; then
 fi
 
 # Bundle to temporary directory
-cd $APP_DIR
+run cd "$APP_DIR"
 run meteor bundle --directory $TEMP_DIR
 
 # Install dependencies
-cd $TEMP_DIR
-cd bundle/programs/server
+run cd $TEMP_DIR
+run cd bundle/programs/server
 npm install --production
 npm prune --production
 
