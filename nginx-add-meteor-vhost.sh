@@ -88,7 +88,7 @@ if [ -n "$VERBOSE" ] ; then
 fi
 
 # Add $user and setup home dir
-sudo adduser $USER
+sudo adduser $USER -G wheel
 sudo mkdir /home/$USER/.ssh
 sudo mkdir /var/www/$USER
 sudo cp ~/.ssh/authorized_keys /home/$USER/.ssh/
@@ -107,7 +107,7 @@ echo "server {
     passenger_enabled on;
     passenger_app_type node;
     passenger_startup_file main.js;
-    passenger_nodejs /usr/local/n/versions/node/0.10.40/bin/node;
+    passenger_nodejs /usr/local/n/versions/node/0.10.41/bin/node;
     passenger_sticky_sessions on;
 
     passenger_env_var MONGO_URL mongodb://localhost:27017/$USER;
