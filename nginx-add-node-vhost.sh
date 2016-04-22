@@ -83,7 +83,7 @@ if [ ! $HOST ] ; then
 fi
 
 # Check verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v "$VERBOSE" ] ; then
   set -v
 fi
 
@@ -124,8 +124,4 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 
 # End
 echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]]
-  sudo service nginx restart
-fi
 exit 0

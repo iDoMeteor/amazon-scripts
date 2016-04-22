@@ -44,7 +44,7 @@
 
 # Exit on failure and treat unset variables as an error
 set -e
-set -o nounset
+#set -o nounset
 
 # Run function
 function run()
@@ -86,7 +86,7 @@ do
 done
 
 # Set default temporary location if required
-if [ ! $TEMP_DIR ] ; then
+if [ ! -n "$TEMP_DIR" ] ; then
   TEMP_DIR = ~/www/tmp
 fi
 
@@ -97,7 +97,7 @@ if [ -d $TEMP_DIR ] ; then
 fi
 
 # Check for verbosity
-if [ $VERBOSE ] ; then
+if [ -n "$VERBOSE" ] ; then
   set -v
 fi
 
