@@ -121,7 +121,9 @@ fi
 
 # Switch directories, restart app
 cd ~/www
-mv bundle bundle.old
+if [ -d ./bundle ] ; then
+  mv bundle bundle.old
+fi
 mv $TEMP_DIR ./bundle
 passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
 rm -rf $TEMP_DIR
