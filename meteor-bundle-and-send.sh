@@ -81,88 +81,8 @@ fi
 run meteor bundle ../$BUNDLE.tar.gz
 run scp $KEYARG ../$BUNDLE.tar.gz $SERVER:www/
 run scp $KEYARG scripts/meteor-unbundle-and-deploy.sh $SERVER:
-echo "---- Launching deployment script on remote server ----"
 run ssh $KEYARG $SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
 echo "Local tasks complete.  App has been deployed and Passenger process re-started."
-exit 0
-
-
-
-
-# Exit on failure and treat unset variables as an error
-set -e
-set -o nounset
-set -x
-
-cd ~/www
-
-APP_DIR=`pwd`
-RESTART_ARGS=
-
-# Parse command line arguments into variables
-while :
-do
-    case "$1" in
-      -b | --bundle)
-    BUNDLE="$2"
-    shift 2
-    ;;
-      -v | --verbose)
-    VERBOSE=true
-    shift 1
-    ;;
-      -*)
-    echo "Error: Unknown option: $1" >&2
-    exit 1
-    ;;
-      *)  # No more options
-    break
-    ;;
-    esac
-done
-
-
-# Validate required arguments
-
-
-# Check for verbosity
-if $VERBOSE ; then
-  set -v
-fi
-
-# Extract newly uploaded package
-if [[ -d ./tmp ]] ; then
-  rm -rf ./tmp
-fi
-mkdir -p tmp
-cd tmp
-tar xzf ../$BUNDLE.tar.gz
-rm -f ../$BUNDLE.tar.gz
-
-# Install dependencies
-cd bundle/programs/server
-npm install --production
-npm prune --production
-
-# Copy over persistent files for standalone mode, jic
-if [[ -e $APP_DIR/bundle/Passengerfile.json ]]; then
-  cp $APP_DIR/bundle/Passengerfile.json $APP_DIR/tmp/bundle/
-fi
-
-# Switch directories, restart app
-cd $APP_DIR
-mv bundle bundle.old
-mv tmp/bundle bundle
-passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
-echo "Sleeping for 1 minute while Passenger respawns the new app threads."
-sleep 1m
-rm -rf tmp
-rm -rf bundle.old
-
-cd
-
-# End
-echo "Remote tasks complete.  App has been deployed and Passenger process re-started."
 exit 0
