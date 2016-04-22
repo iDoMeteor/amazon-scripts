@@ -22,7 +22,7 @@
 #                    that you can easily switch versions in emergencies.
 #                -v | --verbose
 #                   If passed, will show all commands executed.
-#  REQUIREMENTS: Node 0.10.40, Passenger
+#  REQUIREMENTS: Node 0.10.43, Passenger
 #          BUGS: ---
 #         NOTES: ---
 #        AUTHOR: Jason White (Jason@iDoAWS.com),
@@ -33,8 +33,7 @@
 
 # Exit on failure and treat unset variables as an error
 set -e
-set -o nounset
-set -x
+# set -o nounset
 
 cd ~/www
 
@@ -64,13 +63,13 @@ do
 done
 
 # Validate required arguments
-if [ !$BUNDLE ] ; then
+if [ ! -n "$BUNDLE" ] ; then
   echo 'Bundle name is required.'
   exit 1
 fi
 
 # Check for verbosity
-if $VERBOSE ; then
+if [ -n "$VERBOSE" ] ; then
   set -v
 fi
 
@@ -78,31 +77,36 @@ fi
 if [ -d ./tmp ] ; then
   rm -rf ./tmp
 fi
-mkdir -p tmp
+mkdir tmp
 cd tmp
-tar xzf ../$BUNDLE.tar.gz
-rm -f ../$BUNDLE.tar.gz
+tar xzf ~/$BUNDLE.tar.gz
+rm ~/$BUNDLE.tar.gz
 
 # Install dependencies
 cd bundle/programs/server
-node install --production
-node prune --production
+npm install --production
+npm prune --production
 
 # Copy over persistent files for standalone mode, jic
-if [ -e $APP_DIR/bundle/Passengerfile.json ]; then
+if [ -f $APP_DIR/bundle/Passengerfile.json ]; then
   cp $APP_DIR/bundle/Passengerfile.json $APP_DIR/tmp/bundle/
 fi
 
 # Switch directories, restart app
 cd $APP_DIR
-mv bundle bundle.old
+if [ -d ./tmp && -d bundle ] ; then
+  mv bundle bundle.old
+fi
 mv tmp/bundle bundle
-passenger-config restart-app --ignore-app-not-running --ignore-passenger-not-running $RESTART_ARGS $APP_DIR/bundle
 rm -rf tmp
 
 cd
 
 # End
-echo "Remote tasks complete.  App has been deployed and Passenger process re-started."
-echo "Manually confirm the app is running, then remove ~/www/bundle.old."
+echo "Remote tasks complete.  App has been deployed."
+echo
+echo "If this is the first app deployment, restart Nginx."
+echo
+echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+echo "After manually confirming the app is running, then remove ~/www/bundle.old."
 exit 0

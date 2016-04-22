@@ -1,4 +1,3 @@
-
 #!/bin/bash -
 #===============================================================================
 #
@@ -7,21 +6,42 @@
 #         USAGE: meteor-bundle-and-send -b bundle-name -u user -s server [-i keyfile.pem] [-v]
 #                meteor-bundle-and-send --bundle bundle-name --user user --server server [--key keyfile.pem] [--verbose]
 #
-#   DESCRIPTION:
-#
-#       OPTIONS: ---
-#  REQUIREMENTS: ---
+#   DESCRIPTION: This script should generally be run on your development
+#                 machine from your application's root source directory.  It
+#                 will bundle your application into <bundle-name>.tar.gz and
+#                 copy that file to the server along with the script to
+#                 unbundle and deploy the app.
+#                The file and script will be copied to the supplied user's
+#                 home directory and then run the script using the supplied
+#                 bundle name as its sole parameter.
+#                The meteor-unbundle-and-deploy.sh script is expected to be
+#                 in your app's /private/ directory (where this one probably
+#                 is).
+#       OPTIONS:
+#                -b | --bundle
+#                   The name of your bundle, <bundle-name>.tar.gz.
+#                   I recommend making them descriptive and versioned, so
+#                    that you can easily switch versions in emergencies.
+#                -i | --key
+#                   The SSH public key file for the given user and server.
+#                -s | --server
+#                   The fully qualified domain name of the remote server.
+#                -u | --user
+#                   The name of the system account the host will be attributed to.
+#                -v | --verbose
+#                   If passed, will show all commands executed.
+#  REQUIREMENTS: Node, Meteor, SSH/SCP, remote shell access
 #          BUGS: ---
 #         NOTES: ---
-#        AUTHOR: YOUR NAME (),
-#  ORGANIZATION:
+#        AUTHOR: Jason White (Jason@iDoAWS.com),
+#  ORGANIZATION: @iDoAWS
 #       CREATED: 04/12/2016 12:09
-#      REVISION:  ---
+#      REVISION:  001
 #===============================================================================
 
 # Exit on failure and treat unset variables as an error
 set -e
-set -o nounset
+#set -o nounset
 
 # Run function
 function run()
@@ -43,11 +63,11 @@ do
     shift 2
     ;;
       -s | --server)
-    SSL=true
-    shift 1
+    SERVER=$2
+    shift 2
     ;;
       -u | --user)
-    USER="$2"
+    REMOTEUSER="$2"
     shift 2
     ;;
       -v | --verbose)
@@ -65,9 +85,21 @@ do
 done
 
 # Validate required arguments
+if [ ! -n "$BUNDLE" ] ; then
+  echo "Bundle name is required."
+  exit 1
+fi
+if [ ! -n "$REMOTEUSER" ] ; then
+  echo "User is required."
+  exit 1
+fi
+if [ ! -n "$SERVER" ] ; then
+  echo "Server is required."
+  exit 1
+fi
 
 # Check for verbosity
-if $VERBOSE ; then
+if [ -n "$VERBOSE" ] ; then
   set -v
 fi
 
@@ -79,10 +111,10 @@ else
 fi
 
 run meteor bundle ../$BUNDLE.tar.gz
-run scp $KEYARG ../$BUNDLE.tar.gz $SERVER:www/
-run scp $KEYARG scripts/meteor-unbundle-and-deploy.sh $SERVER:
-run ssh $KEYARG $SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
+run scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
+run scp $KEYARG private/amazon/meteor-unbundle-and-deploy.sh $REMOTEUSER@$SERVER:
+run ssh $KEYARG $REMOTEUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
-echo "Local tasks complete.  App has been deployed and Passenger process re-started."
+echo "Local tasks complete."
 exit 0
