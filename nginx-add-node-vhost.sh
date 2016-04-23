@@ -1,10 +1,10 @@
 #!/bin/bash -
 #===============================================================================
 #
-#          FILE: nginx-add-meteor-vhost
+#          FILE: nginx-add-node-vhost
 #
-#         USAGE: nginx-add-meteor-vhost -u user -h host [-v]
-#                nginx-add-meteor-vhost --user user --host host [--verbose]
+#         USAGE: nginx-add-node-vhost -u user -h host [-v]
+#                nginx-add-node-vhost --user user --host host [--verbose]
 #
 #   DESCRIPTION: This script will add a virtual host configuration file to
 #                 the Nginx sites-available/ directory and then creates a
@@ -38,9 +38,17 @@
 #          TODO: Add -s option to enable commented lines and do certificate work
 #===============================================================================
 
-# Exit on failure and treat unset variables as an error
-set -e
-#set -o nounset
+# Strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
+# Check for arguments or provide help
+if [ ! -n "$1" ] ; then
+  echo "Usage:"
+  echo "  $0 -u user -h host [-v]"
+  echo "  $0 --user user --host host [--verbose]"
+  exit 0
+fi
 
 # Parse command line arguments into variables
 while :
@@ -55,7 +63,7 @@ do
     shift 1
     ;;
       -u | --user)
-    USER="$2"
+    USERNAME="$2"
     shift 2
     ;;
       -v | --verbose)
@@ -73,7 +81,7 @@ do
 done
 
 # Validate required arguments
-if [ ! $USER ] ; then
+if [ ! $USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
@@ -88,18 +96,18 @@ if [ -v "$VERBOSE" ] ; then
 fi
 
 # Add $user and setup home dir
-sudo adduser $USER
-sudo mkdir /home/$USER/.ssh
-sudo mkdir /var/www/$USER
-sudo cp ~/.ssh/authorized_keys /home/$USER/.ssh/
-sudo ln -s /var/www/$USER /home/$USER/www
-sudo chown -R $USER: /home/$USER/
-sudo chown -R $USER: /var/www/$USER
+sudo adduser $USERNAME
+sudo mkdir /home/$USERNAME/.ssh
+sudo mkdir /var/www/$USERNAME
+sudo cp ~/.ssh/authorized_keys /home/$USERNAME/.ssh/
+sudo ln -s /var/www/$USERNAME /home/$USERNAME/www
+sudo chown -R $USERNAME: /home/$USERNAME/
+sudo chown -R $USERNAME: /var/www/$USERNAME
 
 # Create /etc/nginx/sites-available/$HOST.conf
 echo "server {
     server_name $HOST;
-    root /var/www/$USER/bundle/public;
+    root /var/www/$USERNAME/bundle/public;
 
     listen 80;
     # listen 443 ssl;
@@ -107,12 +115,11 @@ echo "server {
     passenger_enabled on;
     passenger_app_type node;
     passenger_startup_file main.js;
-    passenger_nodejs /usr/local/n/versions/node/0.10.40/bin/node;
+    passenger_nodejs /usr/local/n/versions/node/5.11.0/bin/node;
     passenger_sticky_sessions on;
 
-    passenger_env_var MONGO_URL mongodb://localhost:27017/$USER;
+    passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
     passenger_env_var ROOT_URL http://$HOST;
-    # passenger_env_var METEOR_SETTINGS ./settings.json
 
     # ssl_certificate      /etc/ssl/$HOST.crt;
     # ssl_certificate_key  /etc/ssl/$HOST.key;

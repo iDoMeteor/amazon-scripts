@@ -1,10 +1,10 @@
 #!/bin/bash -
 #===============================================================================
 #
-#          FILE: meteor-bundle-and-send
+#          FILE: meteor-bundle-and-send.sh
 #
-#         USAGE: meteor-bundle-and-send -b bundle-name -u user -s server [-i keyfile.pem] [-v]
-#                meteor-bundle-and-send --bundle bundle-name --user user --server server [--key keyfile.pem] [--verbose]
+#         USAGE: meteor-bundle-and-send.sh -b bundle-name -u user -s server [-i keyfile.pem] [-v]
+#                meteor-bundle-and-send.sh --bundle bundle-name --user user --server server [--key keyfile.pem] [--verbose]
 #
 #   DESCRIPTION: This script should generally be run on your development
 #                 machine from your application's root source directory.  It
@@ -39,14 +39,24 @@
 #      REVISION:  001
 #===============================================================================
 
-# Exit on failure and treat unset variables as an error
-set -e
-#set -o nounset
+# Strict mode
+set -euo pipefail
+IFS=$'\n\t'
 
-# Run function
+# Check for arguments or provide help
+if [ ! -n "$1" ] ; then
+  echo "Usage:"
+  echo "  $0 -b bundle-name -u user -s server [-i keyfile.pem] [-v]"
+  echo "  $0 --bundle bundle-name --user user --server server [--key keyfile.pem] [--verbose]"
+  exit 0
+fi
+
+# Debug buffer
 function run()
 {
-  echo "Running: $@"
+  if [ -n $DEBUG ] ; then
+    echo "Running: $@"
+  fi
   "$@"
 }
 
@@ -57,6 +67,9 @@ do
       -b | --bundle)
     BUNDLE="$2"
     shift 2
+    ;;
+      --debug)
+    DEBUG=true
     ;;
       -i | --key)
     KEYFILE=$2

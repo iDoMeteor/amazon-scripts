@@ -42,9 +42,9 @@
 #      REVISION:  001
 #===============================================================================
 
-# Exit on failure and treat unset variables as an error
-set -e
-#set -o nounset
+# Strict mode
+set -euo pipefail
+IFS=$'\n\t'
 
 # Run function
 function run()
@@ -53,21 +53,30 @@ function run()
   "$@"
 }
 
-# Parse command line arguments into variables
+# Check for arguments or provide help
+if [ ! -n "$1" ] ; then
+  echo "Usage:"
+  echo "  $0 [app-dir] [-t temp-dir] [-v]"
+  echo "  $0 [app-dir] [--temp temp-dir] [--verbose]"
+  exit 0
+fi
+
+# Make sure we're working with a Meteor app
 if [ -d $1 ] ; then
   APP_DIR=$1
   shift 1
   cd $APP_DIR
 else
-  echo "You must supply a valid Meteor app directory."
+  echo "You must be in, or supply, a valid Meteor app directory."
   exit 1
 fi
 
 if [ ! -d .meteor ] ; then
-  echo "You must supply a valid Meteor app directory."
+  echo "You must be in, or supply, a valid Meteor app directory."
   exit 1
 fi
 
+# Parse command line arguments into variables
 while :
 do
     case "$1" in
@@ -94,7 +103,7 @@ if [ ! -n "$TEMP_DIR" ] ; then
   TEMP_DIR=~/www/tmp
 fi
 
-# Set default temporary location if required
+# Validate temporary location
 if [ -d $TEMP_DIR ] ; then
   echo "Temporary directory $TEMP_DIR already exists, please remove or rename and try again."
   exit 1

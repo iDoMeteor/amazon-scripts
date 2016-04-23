@@ -68,6 +68,10 @@
 #      REVISION:  001
 #===============================================================================
 
+# Strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
 # Confirm that the user really wants to do this
 read -p "Are you sure you wish to anonymize this volume? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -76,9 +80,7 @@ else
   exit 0
 fi
 
-# Exit on failure and treat unset variables as an error
-set -e
-set -o nounset
+# Stop tracking & clear history
 unset HISTFILE
 history -c
 

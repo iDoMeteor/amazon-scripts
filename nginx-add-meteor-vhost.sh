@@ -38,9 +38,17 @@
 #          TODO: Add -s option to enable commented lines and do certificate work
 #===============================================================================
 
-# Exit on failure and treat unset variables as an error
-set -e
-#set -o nounset
+# Strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
+# Check for arguments or provide help
+if [ ! -n "$1" ] ; then
+  echo "Usage:"
+  echo "  $0 -u user -h host [-v]"
+  echo "  $0 --user user --host host [--verbose]"
+  exit 0
+fi
 
 # Parse command line arguments into variables
 while :
@@ -55,7 +63,7 @@ do
     shift 1
     ;;
       -u | --user)
-    USER="$2"
+    USERNAME="$2"
     shift 2
     ;;
       -v | --verbose)
@@ -73,7 +81,7 @@ do
 done
 
 # Validate required arguments
-if [ ! $USER ] ; then
+if [ ! $USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
@@ -87,19 +95,21 @@ if [ -n "$VERBOSE" ] ; then
   set -v
 fi
 
-# Add $user and setup home dir
-sudo adduser $USER -G wheel
-sudo mkdir /home/$USER/.ssh
-sudo mkdir /var/www/$USER
-sudo cp ~/.ssh/authorized_keys /home/$USER/.ssh/
-sudo ln -s /var/www/$USER /home/$USER/www
-sudo chown -R $USER: /home/$USER/
-sudo chown -R $USER: /var/www/$USER
+# Add $USERNAME and setup home dir
+# TODO: Skip things that exist
+sudo adduser $USERNAME -G wheel
+sudo mkdir /home/$USERNAME/.ssh
+sudo mkdir /var/www/$USERNAME
+sudo cp ~/.ssh/authorized_keys /home/$USERNAME/.ssh/
+sudo git clone https://github.com/idometeor/amazon-scripts /home/$USERNAME/bin
+sudo ln -s /var/www/$USERNAME /home/$USERNAME/www
+sudo chown -R $USERNAME: /home/$USERNAME/
+sudo chown -R $USERNAME: /var/www/$USERNAME
 
 # Create /etc/nginx/sites-available/$HOST.conf
 echo "server {
     server_name $HOST;
-    root /var/www/$USER/bundle/public;
+    root /var/www/$USERNAME/bundle/public;
 
     listen 80;
     # listen 443 ssl;
@@ -110,7 +120,7 @@ echo "server {
     passenger_nodejs /usr/local/n/versions/node/0.10.43/bin/node;
     passenger_sticky_sessions on;
 
-    passenger_env_var MONGO_URL mongodb://localhost:27017/$USER;
+    passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
     passenger_env_var ROOT_URL http://$HOST;
     # passenger_env_var METEOR_SETTINGS ./settings.json
 

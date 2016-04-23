@@ -31,9 +31,17 @@
 #      REVISION:  001
 #===============================================================================
 
-# Exit on failure and treat unset variables as an error
-set -e
-# set -o nounset
+# Strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
+# Check for arguments or provide help
+if [ ! -n "$1" ] ; then
+  echo "Usage:"
+  echo "  $0 -b bundle-name [-v]"
+  echo "  $0 --bundle bundle-name [--verbose]"
+  exit 0
+fi
 
 cd ~/www
 
@@ -96,6 +104,7 @@ fi
 cd $APP_DIR
 if [ -d ./tmp && -d bundle ] ; then
   mv bundle bundle.old
+  PRE_EXIST=true
 fi
 mv tmp/bundle bundle
 rm -rf tmp
@@ -105,8 +114,10 @@ cd
 # End
 echo "Remote tasks complete.  App has been deployed."
 echo
-echo "If this is the first app deployment, restart Nginx."
-echo
-echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
-echo "After manually confirming the app is running, then remove ~/www/bundle.old."
+if [ -n "$PRE_EXIST" ] ; then
+  echo "This appears to be an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+  echo "After manually confirming the app is running, then remove ~/www/bundle.old."
+else
+  echo "This appears to be the first app deployment, restart Nginx for changes to take affect."
+fi
 exit 0
