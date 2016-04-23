@@ -40,6 +40,8 @@ of what they do and what arguments they take.
 
 ### ec2-prep-for-distro.sh
 
+*Environment: Server*
+
 **DO NOT RUN THIS SCRIPT** unless you **seriously** know what you are doing! |D
 
 This script will attempt to completely anonymize my Amazon Linux AMI, and will
@@ -56,6 +58,8 @@ The script leaves behind a few vital goodies:
   boot
 * The 'default_site' user account, the #OnePageWonder row content in its Mongo
   database, it's virtual host file and it's app in /var/www/default_site/
+* **Before** running this script, you should manually check the user directories
+  for scraps
 
 It does not wipe free space, since imaging leaves it behind anyway.
 
@@ -109,6 +113,7 @@ It does not wipe free space, since imaging leaves it behind anyway.
 *Environment: Server*
 * Creates an Nginx/Passenger/Node 0.10.4x/Meteor virtual host .conf file in /etc/nginx/sites-available
 * Creates a symbolic link to the above file in /etc/nginx/sites-enabled
+* Gives the user a Mongo database @ localhost:27017/<user>
 * Restarts Nginx
 
 

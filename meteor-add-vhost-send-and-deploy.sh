@@ -6,7 +6,25 @@
 #         USAGE: meteor-add-vhost-bundle-and-send.sh -n newuser -h FQDN -u user  -s server [-i key] [-b bundle-name] [-d app-dir] [-t temp-dir] [-v] [--debug]
 #                meteor-add-vhost-bundle-and-send.sh --new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--dir app-dir] [--temp temp-dir] [--verbose] [--debug]
 #
-#   DESCRIPTION: This script should be run in your production or staging
+#   DESCRIPTION:
+#             From nginx-add-meteor-vhost:
+#                This script will add a virtual host configuration file to
+#                 the Nginx sites-available/ directory and then creates a
+#                 symbolic link to that file in sites-enabled/.
+#                The file is named <host>.conf and will be configured to run
+#                 under the supplied user name using the app bundle in their
+#                 ~/www/bundle directory.  It will be handled by Passenger
+#                 and served on via regular HTTP on port 80.
+#               A user will be created and the home directory will have a
+#                 symblolic link named www (~/www/) that leads to their web
+#                 application directory, /var/www/<user>.  Note that on my
+#                 Amazon Meteor Server 1 AMI, /var/www/ is a symbolic link
+#                 to /opt/www/.
+#               The app will be given a Mongo database @ localhost:27017/<user>.
+#             Then:
+#               The script will bundle local application source, send the
+#                 tarball to the new user's home directory and finally deploy
+#                 by calling meteor-unbundle-and-deploy.sh.
 #       OPTIONS:
 #                -b | --bundle
 #                   Default = 'bundle'

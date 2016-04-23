@@ -6,7 +6,25 @@
 #         USAGE: meteor-add-vhost-clone-and-deploy.sh -u user -h FQDN [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
 #                meteor-add-vhost-clone-and-deploy.sh --user user --host FQDN [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
 #
-#   DESCRIPTION: This script should be run in your production or staging
+#   DESCRIPTION:
+#             From nginx-add-meteor-vhost:
+#                This script will add a virtual host configuration file to
+#                 the Nginx sites-available/ directory and then creates a
+#                 symbolic link to that file in sites-enabled/.
+#                The file is named <host>.conf and will be configured to run
+#                 under the supplied user name using the app bundle in their
+#                 ~/www/bundle directory.  It will be handled by Passenger
+#                 and served on via regular HTTP on port 80.
+#               A user will be created and the home directory will have a
+#                 symblolic link named www (~/www/) that leads to their web
+#                 application directory, /var/www/<user>.  Note that on my
+#                 Amazon Meteor Server 1 AMI, /var/www/ is a symbolic link
+#                 to /opt/www/.
+#               The app will be given a Mongo database @ localhost:27017/<user>.
+#             Then:
+#               The script will change to the new user and clone the given repo
+#                 into their home directory, bundle it, install the node modules
+#                 and finally deploy it to the user's ~/www.
 #       OPTIONS:
 #                -b | --bundle
 #                   Default = 'bundle'
@@ -30,7 +48,8 @@
 #                   Name of temp directory to create with meteor bundle -directory
 #                -u | --user
 #                   The name of the system account the host will be attributed to.
-#                   If their home directory already exists, vhost creation will be skipped
+#                   If their home directory already exists, vhost creation will
+#                     be skipped
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Nginx, Passenger, Node 0.10.43, Meteor locally installed, ~/www/.
