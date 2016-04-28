@@ -48,6 +48,13 @@ cd ~/www
 APP_DIR=`pwd`
 RESTART_ARGS=
 
+# Secure exit strategy
+function finito () {
+  rm ~/$BUNDLE.tar.gz
+  rm -rf $APP_DIR/tmp/
+}
+trap finito EXIT INT TERM
+
 # Parse command line arguments into variables
 while :
 do

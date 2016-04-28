@@ -73,6 +73,12 @@ if [ ! -n "$1" ] ; then
   exit 0
 fi
 
+# Secure exit strategy
+function finito () {
+  rm -rf $TEMP_DIR
+}
+trap finito EXIT INT TERM
+
 # Parse command line arguments into variables
 while :
 do
@@ -202,7 +208,6 @@ if [ -d ./bundle ] ; then
   PRIOR=true
 fi
 mv $TEMP_DIR ./bundle
-rm -rf $TEMP_DIR
 
 # Exit su environment
 exit

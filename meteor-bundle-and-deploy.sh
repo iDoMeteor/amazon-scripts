@@ -46,6 +46,12 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Secure exit strategy
+function finito () {
+  rm -rf $TEMP_DIR
+}
+trap finito EXIT INT TERM
+
 # Run function
 function run()
 {
@@ -135,7 +141,6 @@ if [ -d ./bundle ] ; then
   PRIOR=true
 fi
 mv $TEMP_DIR ./bundle
-rm -rf $TEMP_DIR
 
 cd
 

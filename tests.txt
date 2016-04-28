@@ -1,0 +1,3 @@
+# Commands used to test @iDoMeteor/amazon-scripts
+
+

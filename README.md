@@ -11,7 +11,6 @@ most standard distros.
 ## Scripts Included
 
 Server scripts:
-* ec2-prep-for-distro.sh
 * meteor-add-vhost-clone-and-deploy.sh
 * meteor-bundle-and-deploy.sh
 * meteor-unbundle-and-deploy.sh
@@ -23,6 +22,7 @@ Remote scripts:
 * meteor-bundle-and-send.sh
 
 Coming Soon:
+* install-gitlab
 * route53-add-domains
 * route53-delete-domains
 * route53-list-domains
@@ -37,31 +37,6 @@ it wouldn't have to send anything anywhere! :)
 
 **You must read** the header comments in each script for a detailed description
 of what they do and what arguments they take.
-
-### ec2-prep-for-distro.sh
-
-*Environment: Server*
-
-**DO NOT RUN THIS SCRIPT** unless you **seriously** know what you are doing! |D
-
-This script will attempt to completely anonymize my Amazon Linux AMI, and will
-do a pretty good job on any Linux based Nginx/Mongo based server.
-
-It will also perform some basic security hardening such as **locking all account
-passwords**, **disabling SSH password logins**, and **shreds** all **keys**,
-**logs** and **histories**.
-
-**Caveats**
-
-The script leaves behind a few vital goodies:
-* These scripts in /usr/local/bin and /usr/local/bin/.git for pulling updates on
-  boot
-* The 'default_site' user account, the #OnePageWonder row content in its Mongo
-  database, it's virtual host file and it's app in /var/www/default_site/
-* **Before** running this script, you should manually check the user directories
-  for scraps
-
-It does not wipe free space, since imaging leaves it behind anyway.
 
 ### meteor-add-vhost-clone-and-deploy.sh
 
