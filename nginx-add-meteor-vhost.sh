@@ -53,7 +53,7 @@ fi
 # Parse command line arguments into variables
 for ARG in "$@"
 do
-    case "$ARG" in
+    case "$1" in
       -h | --host)
     HOST="$2"
     shift 2
