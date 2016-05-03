@@ -51,9 +51,9 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-for i in "$@"
+for ARG in "$@"
 do
-    case "$1" in
+    case "$ARG" in
       -h | --host)
     HOST="$2"
     shift 2
