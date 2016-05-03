@@ -87,7 +87,6 @@ echo "This script will *eradicate* all traces of this user and associated resour
 read -p "Are you sure you wish to remove $USERNAME, their web directory *and* database? [y/N] " -n 1 -r REPLY
 echo ""
 if [[ $REPLY =~ ^![Yy]$ ]] ; then
-else
   echo "Exiting without action."
   exit 1
 fi
