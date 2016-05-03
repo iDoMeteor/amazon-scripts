@@ -114,10 +114,11 @@ fi
 
 # Add $USERNAME and setup home dir
 # TODO: Skip things that exist
-sudo adduser $USERNAME -G wheel
+#sudo adduser $USERNAME -G wheel
 sudo mkdir /home/$USERNAME/.ssh
 sudo mkdir /var/www/$USERNAME
 sudo cp ~/.ssh/authorized_keys /home/$USERNAME/.ssh/
+#sudo git clone https://github.com/idometeor/amazon-scripts /home/$USERNAME/bin
 sudo ln -s /var/www/$USERNAME /home/$USERNAME/www
 sudo chown -R $USERNAME: /home/$USERNAME/
 sudo chown -R $USERNAME: /var/www/$USERNAME
