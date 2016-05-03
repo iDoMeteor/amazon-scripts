@@ -34,7 +34,7 @@
 #        AUTHOR: Jason White (Jason@iDoAWS.com),
 #  ORGANIZATION: @iDoAWS
 #       CREATED: 04/15/2016 15:33
-#      REVISION:  002
+#      REVISION:  001
 #          TODO: Add -s option to enable commented lines and do certificate work
 #===============================================================================
 
@@ -80,11 +80,6 @@ do
     esac
 done
 
-# Check verbosity
-if [ -v VERBOSE ] ; then
-  set -v
-fi
-
 # Validate required arguments
 if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
@@ -115,14 +110,18 @@ if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
   exit 1
 fi
 
+# Check verbosity
+if [ -v VERBOSE ] ; then
+  set -v
+fi
+
 # Add $USERNAME and setup home dir
-# TODO: Skip things that exist
 sudo adduser $USERNAME
+#TODO: Make a --superuser option?
 #sudo adduser $USERNAME -G wheel
 sudo mkdir /home/$USERNAME/.ssh
 sudo mkdir /var/www/$USERNAME
 sudo cp ~/.ssh/authorized_keys /home/$USERNAME/.ssh/
-#sudo git clone https://github.com/idometeor/amazon-scripts /home/$USERNAME/bin
 sudo ln -s /var/www/$USERNAME /home/$USERNAME/www
 sudo chown -R $USERNAME: /home/$USERNAME/
 sudo chown -R $USERNAME: /var/www/$USERNAME
@@ -156,8 +155,8 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 # End
 echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+echo ""
 if [[ $REPLY =~ ^[Yy]$ ]] ; then
   sudo service nginx restart
 fi
-echo ""
 exit 0

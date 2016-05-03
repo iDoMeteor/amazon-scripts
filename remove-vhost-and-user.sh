@@ -11,9 +11,9 @@
 #                 /var/www/ as well as their Mongo database.
 #       OPTIONS:
 #                -u | --user
-#                   The name of the system account the host will be attributed to.
+#                   The name of the system account to remove.
 #                -h | --host
-#                   The fully qualified domain name of the virtual host.
+#                   The fully qualified domain name of the virtual host to remove.
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Nginx, Passenger, Node 0.10.40 managed by N, Mongo, ~/www/,
@@ -33,17 +33,19 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Check for arguments or provide help
-if [ ! -n "$1" ] ; then
+if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  $0 -u user -h host [-v]"
   echo "  $0 --user user --host host [--verbose]"
   exit 0
 fi
 
+# User warning follows parameter assessment and validation
+
 # Parse command line arguments into variables
 while :
 do
-    case "$1" in
+    case ${1:-} in
       -h | --host)
     HOST="$2"
     shift 2
@@ -71,12 +73,22 @@ do
 done
 
 # Validate required arguments
-if [ ! $USERNAME ] ; then
+if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-if [ ! $HOST ] ; then
+if [ ! -v HOST ] ; then
   echo 'Host name is required.'
+  exit 1
+fi
+
+# Confirm that the user really wants to do this
+echo "This script will *eradicate* all traces of this user and associated resources."
+read -p "Are you sure you wish to remove $USERNAME, their web directory *and* database? [y/N] " -n 1 -r REPLY
+echo ""
+if [[ $REPLY =~ ^![Yy]$ ]] ; then
+else
+  echo "Exiting without action."
   exit 1
 fi
 
@@ -85,27 +97,32 @@ if [ -n "$VERBOSE" ] ; then
   set -v
 fi
 
-# Confirm that the user really wants to do this
-read -p "Are you sure you wish to remove $USERNAME, their web directory *and* database? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ ^[Yy]$ ]]
-  echo "Say goodbye to $USERNAME!"
-else
-  exit 0
+# Shred & remove
+if [ -d /home/$USERNAME ] ; then
+  find /home/$USERNAME -exec sudo shred -fuz {} +
 fi
-
-# Add $USERNAME and setup home dir
-# TODO: Skip things that exist
-find /home/$USERNAME -exec sudo shred -fuz {} +
-sudo userdel -rf $USERNAME
-sudo shred -fuz /etc/nginx/sites-enabled/$HOST.conf
-sudo shred -fuz /etc/nginx/sites-available/$HOST.conf
-find /var/www/$USERNAME -exec sudo shred -fuz {} +
-sudo rm -rf /var/www/$USERNAME
+if [ 0 -ne $(getent passwd $USERNAME | wc -l) ] ; then
+  sudo userdel -rf $USERNAME
+fi
+if [ -d /home/$USERNAME ] ; then
+  sudo rm -rf /home/$USERNAME
+fi
+if [ -L /home/$USERNAME ] ; then
+  sudo rm /etc/nginx/sites-enabled/$HOST.conf
+fi
+if [ -f /home/$USERNAME ] ; then
+  sudo shred -fuz /etc/nginx/sites-available/$HOST.conf
+fi
+if [ -d /var/www/$USERNAME ] ; then
+  find /var/www/$USERNAME -exec sudo shred -fuz {} +
+  sudo rm -rf /var/www/$USERNAME
+fi
 
 # End
 echo "Tasks complete.  Nginx probably needs to be restarted in order to take effect."
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]] ; then
   sudo service nginx restart
 fi
 exit 0

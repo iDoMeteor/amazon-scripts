@@ -9,7 +9,7 @@
 #                 scripts for creating virtual host and handling Meteor
 #                 deployments.
 #       OPTIONS: ---
-#  REQUIREMENTS: Git, Yum, aws-amitools-ec2
+#  REQUIREMENTS: Git
 #          BUGS: ---
 #         NOTES: ---
 #        AUTHOR: Jason White (Jason@iDoAWS.com),

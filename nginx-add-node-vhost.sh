@@ -34,7 +34,7 @@
 #        AUTHOR: Jason White (Jason@iDoAWS.com),
 #  ORGANIZATION: @iDoAWS
 #       CREATED: 04/15/2016 15:33
-#      REVISION:  002
+#      REVISION:  001
 #          TODO: Add -s option to enable commented lines and do certificate work
 #===============================================================================
 
@@ -43,7 +43,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Check for arguments or provide help
-if [ ! -n "$1" ] ; then
+if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  $0 -u user -h host [-v]"
   echo "  $0 --user user --host host [--verbose]"
@@ -51,9 +51,9 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-for ARG in "$@"
+while :
 do
-    case "$ARG" in
+    case ${1:-} in
       -h | --host)
     HOST="$2"
     shift 2
@@ -81,12 +81,32 @@ do
 done
 
 # Validate required arguments
-if [ ! -n "$USERNAME" ] ; then
+if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-if [ ! -n "$HOST" ] ; then
+if [ 0 -ne $(getent passwd $USERNAME | wc -l) ] ; then
+  echo 'PAM user already exists.'
+  exit 1
+fi
+if [ -d /home/$USERNAME ] ; then
+  echo 'User home directory already exists.'
+  exit 1
+fi
+if [ -d /var/www/$USERNAME ] ; then
+  echo 'User web directory already exists.'
+  exit 1
+fi
+if [ ! -v HOST ] ; then
   echo 'Host name is required.'
+  exit 1
+fi
+if [ -f /etc/nginx/sites-available/$HOST\.conf ] ; then
+  echo 'Virtual host configuration is already available.'
+  exit 1
+fi
+if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
+  echo 'Virtual host configuration is already enabled.'
   exit 1
 fi
 
@@ -130,4 +150,9 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 
 # End
 echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
+read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]] ; then
+  sudo service nginx restart
+fi
 exit 0
