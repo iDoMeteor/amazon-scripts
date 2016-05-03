@@ -93,3 +93,6 @@ update-idometeor-scripts.sh
 #install-onepagewonder.sh
 #install-rocketchat.sh
 
+
+
+loggly/goaccess/visitors/atop/iftop/ntop - symlink passenger to an sbin - edit nginx default html -

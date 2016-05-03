@@ -117,6 +117,9 @@ if [ -d /var/www/$USERNAME ] ; then
   sudo rm -rf /var/www/$USERNAME
 fi
 
+# Drop database
+sudo mongo $USERNAME --eval "db.dropDatabase()"
+
 # End
 echo "Tasks complete.  Nginx probably needs to be restarted in order to take effect."
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
