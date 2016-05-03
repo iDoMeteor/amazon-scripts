@@ -80,6 +80,11 @@ do
     esac
 done
 
+# Check verbosity
+if [ -v VERBOSE ] ; then
+  set -v
+fi
+
 # Validate required arguments
 if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
@@ -109,11 +114,6 @@ fi
 if [ -f /etc/nginx/sites-enabled/$HOST\.conf ] ; then
   echo 'Virtual host configuration is already enabled.'
   exit 1
-fi
-
-# Check verbosity
-if [ -v VERBOSE ] ; then
-  set -v
 fi
 
 # Add $USERNAME and setup home dir
