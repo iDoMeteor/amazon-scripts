@@ -156,7 +156,7 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 # End
 echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
+if [[ $REPLY =~ ^[Yy]$ ]] ; then
   sudo service nginx restart
 fi
 echo ""
