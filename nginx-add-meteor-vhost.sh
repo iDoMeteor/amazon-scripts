@@ -98,14 +98,6 @@ if [ ! -v HOST ] ; then
   echo 'Host name is required.'
   exit 1
 fi
-if [ -f "/etc/nginx/sites-available/$HOST\.conf" ] ; then
-  echo 'Virtual host configuration is already available.'
-  exit 1
-fi
-if [ -f "/etc/nginx/sites-enabled/$HOST\.conf" ] ; then
-  echo 'Virtual host configuration is already enabled.'
-  exit 1
-fi
 
 # Check verbosity
 if [ -v VERBOSE ] ; then
