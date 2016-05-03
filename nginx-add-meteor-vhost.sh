@@ -99,7 +99,11 @@ if [ ! -v HOST ] ; then
   exit 1
 fi
 if [ -f "/etc/nginx/sites-available/$HOST.conf" ] ; then
-  echo 'Virtual host configuration already exists.'
+  echo 'Virtual host configuration is already available.'
+  exit 1
+fi
+if [ -f "/etc/nginx/sites-enabled/$HOST.conf" ] ; then
+  echo 'Virtual host configuration is already enabled.'
   exit 1
 fi
 
@@ -114,7 +118,6 @@ sudo adduser $USERNAME -G wheel
 sudo mkdir /home/$USERNAME/.ssh
 sudo mkdir /var/www/$USERNAME
 sudo cp ~/.ssh/authorized_keys /home/$USERNAME/.ssh/
-sudo git clone https://github.com/idometeor/amazon-scripts /home/$USERNAME/bin
 sudo ln -s /var/www/$USERNAME /home/$USERNAME/www
 sudo chown -R $USERNAME: /home/$USERNAME/
 sudo chown -R $USERNAME: /var/www/$USERNAME
