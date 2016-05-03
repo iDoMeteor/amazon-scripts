@@ -93,7 +93,7 @@ else
 fi
 
 # Check verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 

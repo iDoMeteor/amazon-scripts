@@ -111,7 +111,7 @@ if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
 fi
 
 # Check verbosity
-if [ -v "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 
