@@ -6,17 +6,11 @@ nginx-add-meteor-vhost.sh -u meteorintra -h meteorintranethost
 nginx-add-meteor-vhost.sh -u meteorrootdomain -h meteorroot.domain
 nginx-add-meteor-vhost.sh -u meteorsubdomain -h meteor.sub.domain
 
-
-
-
 #nginx-add-node-vhost.sh 
 
 nginx-add-node-vhost.sh -u nodeintra -h nodeintranethost
 nginx-add-node-vhost.sh -u noderootdomain -h noderoot.domain
 nginx-add-node-vhost.sh -u nodesubdomain -h node.sub.domain
-
-
-
 
 #remove-vhost-and-user.sh
 

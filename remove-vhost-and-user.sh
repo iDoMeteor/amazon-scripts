@@ -106,10 +106,10 @@ fi
 if [ -d /home/$USERNAME ] ; then
   sudo rm -rf /home/$USERNAME
 fi
-if [ -L /home/$USERNAME ] ; then
+if [ -L /etc/nginx/sites-enabled/$HOST.conf ] ; then
   sudo rm /etc/nginx/sites-enabled/$HOST.conf
 fi
-if [ -f /home/$USERNAME ] ; then
+if [ -f /etc/nginx/sites-available/$HOST.conf ] ; then
   sudo shred -fuz /etc/nginx/sites-available/$HOST.conf
 fi
 if [ -d /var/www/$USERNAME ] ; then
