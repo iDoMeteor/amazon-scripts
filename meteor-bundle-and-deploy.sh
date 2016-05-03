@@ -51,7 +51,6 @@ ORIGIN=`pwd`
 
 # Secure exit strategy
 function finito () {
-  echo "Cleaning up scratch files"
   rm -rf $TEMP_DIR
 }
 trap finito EXIT INT TERM
