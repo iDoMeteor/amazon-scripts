@@ -67,7 +67,7 @@ fi
 # Warn ec2-user or root
 ME=`whoami`
 if [[ $ME =~ ^(ec2-user|root)$ ]] ; then
-  echo "You probably want to run this as an app user, rather than $ME\."
+  echo "You probably want to run this as an app user, rather than $ME."
   read -p "Would you still like to proceed? [y/N]" -n 1 -r REPLY
   echo ""
   if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
