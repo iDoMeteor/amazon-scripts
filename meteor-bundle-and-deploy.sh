@@ -51,7 +51,9 @@ ORIGIN=`pwd`
 
 # Secure exit strategy
 function finito () {
-  rm -rf $TEMP_DIR
+  if [ -v $TEMP_DIR ] ; then
+    rm -rf $TEMP_DIR
+  fi
 }
 trap finito EXIT INT TERM
 
