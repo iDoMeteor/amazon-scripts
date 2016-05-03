@@ -54,7 +54,7 @@ function finito () {
   echo "If tasks failed to complete, you will need to manually remove the temporary files."
   echo "They are located in ~/www/tmp by default."
 }
-trap finito EXIT INT TERM
+trap finito INT TERM
 
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
