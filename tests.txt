@@ -1,3 +1,68 @@
 # Commands used to test @iDoMeteor/amazon-scripts
 
+#nginx-add-meteor-vhost.sh 
+
+nginx-add-meteor-vhost.sh -u meteorintra -h meteorintranethost
+nginx-add-meteor-vhost.sh -u meteorrootdomain -h meteorroot.domain
+nginx-add-meteor-vhost.sh -u meteorsubdomain -h meteor.sub.domain
+
+#nginx-add-node-vhost.sh 
+
+nginx-add-node-vhost.sh -u nodeintra -h nodeintranethost
+nginx-add-node-vhost.sh -u noderootdomain -h noderoot.domain
+nginx-add-node-vhost.sh -u nodesubdomain -h node.sub.domain
+
+#remove-vhost-and-user.sh
+
+remove-vhost-and-user.sh -u meteorintra -h meteorintranethost
+remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
+remove-vhost-and-user.sh -u meteorsubdomain -h meteor.sub.domain
+remove-vhost-and-user.sh -u nodeintra -h nodeintranethost
+remove-vhost-and-user.sh -u noderootdomain -h noderoot.domain
+remove-vhost-and-user.sh -u nodesubdomain -h node.sub.domain
+
+#meteor-add-vhost-bundle-and-send.sh
+meteor-add-vhost-bundle-and-send.sh -n meteorintra -h meteorintranethost -u  ec2-user -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem #-d ~/XXX
+meteor-add-vhost-bundle-and-send.sh -n meteorrootdomain -h meteorroot.domain -u  ec2-user -s 52.200.31.195 -t /tmp/apptest
+meteor-add-vhost-bundle-and-send.sh -n meteorsubdomain -h meteor.sub.domain -u  ec2-user -s 52.200.31.195
+remove-vhost-and-user.sh -u meteorintra -h meteorintranethost
+remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
+remove-vhost-and-user.sh -u meteorsubdomain -h meteor.sub.domain
+
+#meteor-add-vhost-git-and-deploy.sh
+meteor-add-vhost-git-and-deploy.sh -u meteorintra -h meteorintranethost -r https://github.com/idometeor/onepagewonder.git
+meteor-add-vhost-git-and-deploy.sh -u meteorrootdomain -h meteorroot.domain -r https://github.com/idometeor/onepagewonder.git
+meteor-add-vhost-git-and-deploy.sh -u meteorsubdomain -h meteor.sub.domain -r https://github.com/idometeor/onepagewonder.git
+remove-vhost-and-user.sh -u meteorintra -h meteorintranethost
+remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
+remove-vhost-and-user.sh -u meteorsubdomain -h meteor.sub.domain
+meteor-add-vhost-git-and-deploy.sh -u meteorrootdomain -h meteorroot.domain # TEST PULL VERSION WITH AN EXISTING REPO
+remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
+
+#meteor-bundle-and-deploy.sh
+meteor-bundle-and-deploy.sh ./app -t /tmp/apptest2
+meteor-bundle-and-deploy.sh # From app source root
+meteor-bundle-and-deploy.sh ./app
+
+#meteor-bundle-and-send.sh
+meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem -b package
+meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -d ./app
+
+#meteor-git-and-deploy.sh
+meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder.git
+meteor-git-and-deploy.sh # TEST PULL VERSION WITH AN EXISTING REPO
+
+#meteor-unbundle-and-deploy.sh
+meteor-unbundle-and-deploy.sh -b test-bundle
+
+#update-amazon-tools.sh
+update-amazon-tools.sh
+
+
+
+
+
+#install-gitlab.sh
+#install-onepagewonder.sh
+#install-rocketchat.sh
 

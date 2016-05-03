@@ -1,10 +1,13 @@
 #!/bin/bash -
 #===============================================================================
 #
+# Add -d | --dir
+#
+#
 #          FILE: meteor-bundle-and-send.sh
 #
-#         USAGE: meteor-bundle-and-send.sh -b bundle-name -u user -s server [-i keyfile.pem] [-v]
-#                meteor-bundle-and-send.sh --bundle bundle-name --user user --server server [--key keyfile.pem] [--verbose]
+#         USAGE: meteor-bundle-and-send.sh -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]
+#                meteor-bundle-and-send.sh --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--verbose]
 #
 #   DESCRIPTION: This script should generally be run on your development
 #                 machine from your application's root source directory.  It
@@ -19,6 +22,7 @@
 #                 is).
 #       OPTIONS:
 #                -b | --bundle
+#                   Default: 'bundle'
 #                   The name of your bundle, <bundle-name>.tar.gz.
 #                   I recommend making them descriptive and versioned, so
 #                    that you can easily switch versions in emergencies.
@@ -46,8 +50,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ ! -n "$1" ] ; then
   echo "Usage:"
-  echo "  $0 -b bundle-name -u user -s server [-i keyfile.pem] [-v]"
-  echo "  $0 --bundle bundle-name --user user --server server [--key keyfile.pem] [--verbose]"
+  echo "  $0 -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]"
+  echo "  $0 --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--verbose]"
   exit 0
 fi
 
@@ -98,10 +102,6 @@ do
 done
 
 # Validate required arguments
-if [ ! -n "$BUNDLE" ] ; then
-  echo "Bundle name is required."
-  exit 1
-fi
 if [ ! -n "$REMOTEUSER" ] ; then
   echo "User is required."
   exit 1
@@ -109,6 +109,11 @@ fi
 if [ ! -n "$SERVER" ] ; then
   echo "Server is required."
   exit 1
+fi
+
+# Set defaults if required
+if [ ! -n "$BUNDLE" ] ; then
+  BUNDLE='bundle'
 fi
 
 # Check for verbosity
