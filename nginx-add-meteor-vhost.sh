@@ -90,11 +90,11 @@ if [ -n $x ] ; then
   echo 'PAM user already exists.'
   exit 1
 fi
-if [ -d "/home/$USERNAME" ] ; then
+if [ -d /home/$USERNAME ] ; then
   echo 'User home directory already exists.'
   exit 1
 fi
-if [ -d "/var/www/$USERNAME" ] ; then
+if [ -d /var/www/$USERNAME ] ; then
   echo 'User web directory already exists.'
   exit 1
 fi
@@ -102,11 +102,11 @@ if [ ! -v HOST ] ; then
   echo 'Host name is required.'
   exit 1
 fi
-if [ -f "/etc/nginx/sites-available/$HOST\.conf" ] ; then
+if [ -f /etc/nginx/sites-available/$HOST\.conf ] ; then
   echo 'Virtual host configuration is already available.'
   exit 1
 fi
-if [ -f "/etc/nginx/sites-enabled/$HOST\.conf" ] ; then
+if [ -f /etc/nginx/sites-enabled/$HOST\.conf ] ; then
   echo 'Virtual host configuration is already enabled.'
   exit 1
 fi
