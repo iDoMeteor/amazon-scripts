@@ -51,7 +51,9 @@ ORIGIN=`pwd`
 
 # Secure exit strategy
 function finito () {
-  rm -rf $TEMP_DIR
+  if [ ! -v $TEMP_EXISTS -a -v $TEMP_DIR -a -e $TEMP_DIR ] ; then
+    rm -rf $TEMP_DIR
+  fi
 }
 trap finito EXIT INT TERM
 
@@ -121,6 +123,7 @@ fi
 # Validate temporary location
 if [ -d $TEMP_DIR ] ; then
   echo "Temporary directory $TEMP_DIR already exists, please remove or rename and try again."
+  TEMP_EXISTS=true
   exit 1
 fi
 
