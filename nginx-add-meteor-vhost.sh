@@ -51,9 +51,9 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-for ARG in "$@"
+for ARG in $@
 do
-    case "${1:-}" in
+    case ${1:-} in
       -h | --host)
     HOST="$2"
     shift 2
@@ -81,17 +81,17 @@ do
 done
 
 # Validate required arguments
-if [ ! -v "$USERNAME" ] ; then
+if [ ! -v $USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-if [ ! -v "$HOST" ] ; then
+if [ ! -v $HOST ] ; then
   echo 'Host name is required.'
   exit 1
 fi
 
 # Check verbosity
-if [ -v "$VERBOSE" ] ; then
+if [ -v $VERBOSE ] ; then
   set -v
 fi
 
