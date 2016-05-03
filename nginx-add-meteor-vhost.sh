@@ -85,8 +85,8 @@ if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-x=`getent passwd $USERNAME | wc -l`
-if [ $x -eq 0 ] ; then
+x=`getent passwd $USERNAME`
+if [ -n $x ] ; then
   echo 'PAM user already exists.'
   exit 1
 fi
