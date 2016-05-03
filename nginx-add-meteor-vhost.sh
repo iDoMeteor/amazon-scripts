@@ -51,7 +51,7 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-while [ -v 1 ]:
+while :
 do
     case ${1:-} in
       -h | --host)
@@ -85,8 +85,16 @@ if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
+if [ -d "/home/$USERNAME" ] ; then
+  echo 'User home directory already exists.'
+  exit 1
+fi
 if [ ! -v HOST ] ; then
   echo 'Host name is required.'
+  exit 1
+fi
+if [ -f "/etc/nginx/sites-available/$HOST.conf" ] ; then
+  echo 'Virtual host configuration already exists.'
   exit 1
 fi
 
