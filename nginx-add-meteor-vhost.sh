@@ -34,7 +34,7 @@
 #        AUTHOR: Jason White (Jason@iDoAWS.com),
 #  ORGANIZATION: @iDoAWS
 #       CREATED: 04/15/2016 15:33
-#      REVISION:  001
+#      REVISION:  002
 #          TODO: Add -s option to enable commented lines and do certificate work
 #===============================================================================
 
@@ -51,7 +51,7 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-while "$1":
+while [ -n "$1" ]:
 do
     case "$1" in
       -h | --host)
