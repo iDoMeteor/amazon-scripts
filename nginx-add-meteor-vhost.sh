@@ -81,17 +81,17 @@ do
 done
 
 # Validate required arguments
-if [ ! -v $USERNAME ] ; then
+if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-if [ ! -v $HOST ] ; then
+if [ ! -v HOST ] ; then
   echo 'Host name is required.'
   exit 1
 fi
 
 # Check verbosity
-if [ -v $VERBOSE ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 
