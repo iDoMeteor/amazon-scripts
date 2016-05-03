@@ -85,33 +85,27 @@ if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-echo 1
 x=`getent passwd $USERNAME | wc -l`
-if [ $x -ne 0 ] ; then
+if [ $x -eq 0 ] ; then
   echo 'PAM user already exists.'
   exit 1
 fi
-echo 2
 if [ -d "/home/$USERNAME" ] ; then
   echo 'User home directory already exists.'
   exit 1
 fi
-echo 3
 if [ ! -v HOST ] ; then
   echo 'Host name is required.'
   exit 1
 fi
-echo 4
 if [ -f "/etc/nginx/sites-available/$HOST\.conf" ] ; then
   echo 'Virtual host configuration is already available.'
   exit 1
 fi
-echo 5
 if [ -f "/etc/nginx/sites-enabled/$HOST\.conf" ] ; then
   echo 'Virtual host configuration is already enabled.'
   exit 1
 fi
-echo 6
 
 # Check verbosity
 if [ -v VERBOSE ] ; then
