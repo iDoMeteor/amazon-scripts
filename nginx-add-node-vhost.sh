@@ -51,7 +51,7 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-while ($1):
+while [ -n "$1" ]:
 do
     case "$1" in
       -h | --host)
