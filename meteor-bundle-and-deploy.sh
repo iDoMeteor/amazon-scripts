@@ -59,8 +59,8 @@ trap finito EXIT INT TERM
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  $0 [app-dir] [-t temp-dir] [-v]"
-  echo "  $0 [app-dir] [--temp temp-dir] [--verbose]"
+  echo "  `basename $0` [app-dir] [-t temp-dir] [-v]"
+  echo "  `basename $0` [app-dir] [--temp temp-dir] [--verbose]"
   exit 0
 fi
 
