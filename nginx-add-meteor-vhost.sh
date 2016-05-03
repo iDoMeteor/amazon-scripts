@@ -114,6 +114,7 @@ fi
 
 # Add $USERNAME and setup home dir
 # TODO: Skip things that exist
+sudo adduser $USERNAME
 #sudo adduser $USERNAME -G wheel
 sudo mkdir /home/$USERNAME/.ssh
 sudo mkdir /var/www/$USERNAME
