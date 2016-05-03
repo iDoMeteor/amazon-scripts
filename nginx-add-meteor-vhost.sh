@@ -81,11 +81,11 @@ do
 done
 
 # Validate required arguments
-if [ ! $USERNAME ] ; then
+if [ ! -n "$USERNAME" ] ; then
   echo 'User name is required.'
   exit 1
 fi
-if [ ! $HOST ] ; then
+if [ ! -n "$HOST" ] ; then
   echo 'Host name is required.'
   exit 1
 fi
