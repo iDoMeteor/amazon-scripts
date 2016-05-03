@@ -98,7 +98,7 @@ fi
 
 # Shred & remove
 if [ -d /home/$USERNAME ] ; then
-  sudo find /home/$USERNAME -exec sudo shred -fuz {} +
+  sudo find /home/$USERNAME -type f -exec sudo shred -fuz {} +
 fi
 if [ 0 -ne $(getent passwd $USERNAME | wc -l) ] ; then
   sudo userdel -rf $USERNAME
@@ -113,7 +113,7 @@ if [ -f /home/$USERNAME ] ; then
   sudo shred -fuz /etc/nginx/sites-available/$HOST.conf
 fi
 if [ -d /var/www/$USERNAME ] ; then
-  find /var/www/$USERNAME -exec sudo shred -fuz {} +
+  find /var/www/$USERNAME -type f -exec sudo shred -fuz {} +
   sudo rm -rf /var/www/$USERNAME
 fi
 
