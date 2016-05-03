@@ -85,13 +85,17 @@ if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
 fi
-#x=`getent passwd $USERNAME`
-#if [ -n $x ] ; then
-#  echo 'PAM user already exists.'
-#  exit 1
-#fi
+x=`getent passwd $USERNAME`
+if [ -n $x ] ; then
+  echo 'PAM user already exists.'
+  exit 1
+fi
 if [ -d "/home/$USERNAME" ] ; then
   echo 'User home directory already exists.'
+  exit 1
+fi
+if [ -d "/var/www/$USERNAME" ] ; then
+  echo 'User web directory already exists.'
   exit 1
 fi
 if [ ! -v HOST ] ; then
