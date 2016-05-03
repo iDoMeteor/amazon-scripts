@@ -86,7 +86,7 @@ if [ ! -v USERNAME ] ; then
   exit 1
 fi
 getent passwd $USERNAME >> /dev/null
-if [ 0 -ne $? ] ; then
+if [ $? -ne 0 ] ; then
   echo 'PAM user already exists.'
   exit 1
 fi
