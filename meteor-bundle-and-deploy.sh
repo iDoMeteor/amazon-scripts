@@ -46,21 +46,18 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Save PWD
+ORIGIN=`pwd`
+
 # Secure exit strategy
 function finito () {
+  echo "Cleaning up scratch files"
   rm -rf $TEMP_DIR
 }
 trap finito EXIT INT TERM
 
-# Run function
-function run()
-{
-  echo "Running: $@"
-  "$@"
-}
-
 # Check for arguments or provide help
-if [ ! -n "$1" ] ; then
+if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  $0 [app-dir] [-t temp-dir] [-v]"
   echo "  $0 [app-dir] [--temp temp-dir] [--verbose]"
@@ -79,13 +76,14 @@ fi
 
 if [ ! -d .meteor ] ; then
   echo "You must be in, or supply, a valid Meteor app directory."
+  cd $OLDPWD
   exit 1
 fi
 
 # Parse command line arguments into variables
 while :
 do
-    case "$1" in
+    case ${1:-} in
       -t | --temp)
     TEMP_DIR="$2"
     shift 2
@@ -105,7 +103,7 @@ do
 done
 
 # Set default temporary location if required
-if [ ! -n "$TEMP_DIR" ] ; then
+if [ ! -v TEMP_DIR ] ; then
   TEMP_DIR=~/www/tmp
 fi
 
@@ -116,21 +114,21 @@ if [ -d $TEMP_DIR ] ; then
 fi
 
 # Check for verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 
 # Bundle to temporary directory
-run meteor bundle --directory $TEMP_DIR
+meteor bundle --directory $TEMP_DIR
 
 # Install dependencies
-run cd $TEMP_DIR
-run cd programs/server
+cd $TEMP_DIR
+cd programs/server
 npm install --production
 npm prune --production
 
 # Copy over persistent files for standalone mode, jic
-if [ -e $APP_DIR/bundle/Passengerfile.json ]; then
+if [ -f $APP_DIR/bundle/Passengerfile.json ]; then
   cp $APP_DIR/bundle/Passengerfile.json $APP_DIR/tmp/bundle/
 fi
 
@@ -145,10 +143,32 @@ mv $TEMP_DIR ./bundle
 cd
 
 # End
+if [ -v PRIOR ] ; then
+  echo "This appears to have been an upgrade."
+  read -p "Would you like me to restart the Passenger process? [Y/n]" -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy\n]$ ]] ; then
+    sudo passenger-config restart-app $APP_DIR
+  else
+    echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+    echo "Otherwise, Passenger will be serving your old version from memory."
+  fi
+  echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
+else
+  echo "This appears to be the first deployment for this app."
+  read -p "Would you like me to restart Nginx for you? [Y/n]" -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy\n]$ ]] ; then
+    sudo service nginx restart
+  else
+    echo "If this is the application's first deployment, Nginx will need to be restarted."
+    echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+    echo "Otherwise, Passenger will be serving your old version from memory."
+  fi
+  echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
+fi
+cd $ORIGIN
+echo
 echo "Tasks complete.  App has been deployed."
 echo
-echo "If this is the first app deployment, restart Nginx."
-echo
-echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
-echo "After manually confirming the app is running, then remove ~/www/bundle.old."
 exit 0
