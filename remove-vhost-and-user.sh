@@ -98,7 +98,7 @@ fi
 
 # Shred & remove
 if [ -d /home/$USERNAME ] ; then
-  find /home/$USERNAME -exec sudo shred -fuz {} +
+  sudo find /home/$USERNAME -exec sudo shred -fuz {} +
 fi
 if [ 0 -ne $(getent passwd $USERNAME | wc -l) ] ; then
   sudo userdel -rf $USERNAME
