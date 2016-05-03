@@ -51,9 +51,8 @@ ORIGIN=`pwd`
 
 # Secure exit strategy
 function finito () {
-  if [ -v $TEMP_DIR ] ; then
-    rm -rf $TEMP_DIR
-  fi
+  echo "If tasks failed to complete, you will need to manually remove the temporary files."
+  echo "They are located in ~/www/tmp by default."
 }
 trap finito EXIT INT TERM
 
