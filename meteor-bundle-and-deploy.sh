@@ -64,6 +64,18 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
+# Warn ec2-user or root
+ME=`whoami`
+if [[ ME =~ ^(ec2-user|root)$ ] ; then
+  echo "You probably want to run this as an app user, rather than $ME\."
+  read -p "Would you still like to proceed? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Exiting without action."
+    exit 1
+  fi
+fi
+
 # Make sure we're working with a Meteor app
 if [ -d $1 ] ; then
   APP_DIR=$1
