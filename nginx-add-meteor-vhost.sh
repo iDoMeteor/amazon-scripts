@@ -43,7 +43,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Check for arguments or provide help
-if [ ! -n "$1" ] ; then
+if [ ! -v "$1" ] ; then
   echo "Usage:"
   echo "  $0 -u user -h host [-v]"
   echo "  $0 --user user --host host [--verbose]"
