@@ -51,7 +51,7 @@ if [ ! -n "$1" ] ; then
 fi
 
 # Parse command line arguments into variables
-while :
+while [ -v 1 ]:
 do
     case ${1:-} in
       -h | --host)
@@ -138,4 +138,5 @@ read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
   sudo service nginx restart
 fi
+echo ""
 exit 0
