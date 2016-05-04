@@ -36,10 +36,11 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Check for arguments or provide help
-if [ ! -n "$1" ] ; then
+if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -b bundle-name [-v]"
   echo "  `basename $0` --bundle bundle-name [--verbose]"
+  echo "This should be run on your staging or production server."
   exit 0
 fi
 

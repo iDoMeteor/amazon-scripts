@@ -37,6 +37,7 @@ if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -u user -h host [-v]"
   echo "  `basename $0` --user user --host host [--verbose]"
+  echo "This should be run on your staging or production server."
   exit 0
 fi
 

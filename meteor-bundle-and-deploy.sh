@@ -1,10 +1,10 @@
 #!/bin/bash -
 #===============================================================================
 #
-#          FILE: meteor-bundle-and-deploy
+#          FILE: meteor-bundle-and-deploy.sh
 #
-#         USAGE: meteor-bundle-and-deploy [app-dir] [-t temp-dir] [-v]
-#                meteor-bundle-and-deploy [app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-bundle-and-deploy.sh [app-dir] [-t temp-dir] [-v]
+#                meteor-bundle-and-deploy.sh [app-dir] [--temp temp-dir] [--verbose]
 #
 #   DESCRIPTION: This script should be run in your production or staging
 #                 environment, which already contains the source for your
@@ -54,6 +54,7 @@ if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` [app-dir] [-t temp-dir] [-v]"
   echo "  `basename $0` [app-dir] [--temp temp-dir] [--verbose]"
+  echo "This should be run on your staging or production server."
   exit 0
 fi
 

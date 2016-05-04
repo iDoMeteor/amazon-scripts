@@ -66,10 +66,11 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Check for arguments or provide help
-if [ ! -n "$1" ] ; then
+if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -u user -h FQDN [-r repo-address] [-d app-dir] [-t temp-dir] [-v]"
   echo "  `basename $0` --user user --host FQDN [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]"
+  echo "This should be run on your staging or production server."
   exit 0
 fi
 
