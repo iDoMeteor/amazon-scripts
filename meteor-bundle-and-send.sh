@@ -1,9 +1,6 @@
 #!/bin/bash -
 #===============================================================================
 #
-# Add -d | --dir
-#
-#
 #          FILE: meteor-bundle-and-send.sh
 #
 #         USAGE: meteor-bundle-and-send.sh -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]
@@ -57,6 +54,9 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
+# Save PWD
+ORIGIN=`pwd`
+
 # Debug buffer
 function run()
 {
@@ -72,6 +72,10 @@ do
     case ${1:-} in
       -b | --bundle)
     BUNDLE="$2"
+    shift 2
+    ;;
+      -d | --dir)
+    SRC_DIR=$2
     shift 2
     ;;
       --debug)
@@ -95,6 +99,7 @@ do
     ;;
       -*)
     echo "Error: Unknown option: $1" >&2
+    cd $ORIGIN
     exit 1
     ;;
       *)  # No more options
@@ -106,16 +111,32 @@ done
 # Validate required arguments
 if [ ! -v REMOTEUSER ] ; then
   echo "User is required."
+  cd $ORIGIN
   exit 1
 fi
 if [ ! -v SERVER ] ; then
   echo "Server is required."
+  cd $ORIGIN
   exit 1
 fi
 
 # Set defaults if required
 if [ ! -v BUNDLE ] ; then
   BUNDLE='bundle'
+fi
+if [ -v SRC_DIR ] ; then
+  if [ -d $SRC_DIR ] ; then
+    cd $SRC_DIR
+  else
+    echo "Source directory $SRC_DIR is invalid."
+    cd $ORIGIN
+    exit 1
+  fi
+fi
+if [ ! -d .meteor ] ; then
+  echo "You must be in, or supply, a valid Meteor app directory."
+  cd $ORIGIN
+  exit 1
 fi
 
 # Check for verbosity
@@ -135,5 +156,6 @@ run scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
 run ssh $KEYARG $REMOTEUSER@$SERVER meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
+cd $ORIGIN
 echo "Local tasks complete."
 exit 0

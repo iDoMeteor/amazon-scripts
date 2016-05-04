@@ -46,9 +46,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Save PWD
-ORIGIN=`pwd`
-
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
@@ -57,6 +54,9 @@ if [ $# -eq 0 ] ; then
   echo "This should be run on your staging or production server."
   exit 0
 fi
+
+# Save PWD
+ORIGIN=`pwd`
 
 # Warn ec2-user or root
 ME=`whoami`
@@ -78,7 +78,6 @@ if [ -d $1 ] ; then
 else
   APP_DIR=`pwd`
 fi
-
 if [ ! -d .meteor ] ; then
   echo "You must be in, or supply, a valid Meteor app directory."
   cd $ORIGIN
