@@ -35,8 +35,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  $0 -u user -h host [-v]"
-  echo "  $0 --user user --host host [--verbose]"
+  echo "  `basename $0` -u user -h host [-v]"
+  echo "  `basename $0` --user user --host host [--verbose]"
   exit 0
 fi
 

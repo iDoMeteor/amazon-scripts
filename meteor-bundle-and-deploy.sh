@@ -49,13 +49,6 @@ IFS=$'\n\t'
 # Save PWD
 ORIGIN=`pwd`
 
-# Secure exit strategy
-function finito () {
-  echo "If tasks failed to complete, you will need to manually remove the temporary files."
-  echo "They are located in ~/www/tmp by default."
-}
-trap finito INT TERM
-
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
@@ -122,7 +115,6 @@ fi
 # Validate temporary location
 if [ -d $TEMP_DIR ] ; then
   echo "Temporary directory $TEMP_DIR already exists, please remove or rename and try again."
-  TEMP_EXISTS=true
   exit 1
 fi
 

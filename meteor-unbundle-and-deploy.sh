@@ -38,8 +38,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ ! -n "$1" ] ; then
   echo "Usage:"
-  echo "  $0 -b bundle-name [-v]"
-  echo "  $0 --bundle bundle-name [--verbose]"
+  echo "  `basename $0` -b bundle-name [-v]"
+  echo "  `basename $0` --bundle bundle-name [--verbose]"
   exit 0
 fi
 

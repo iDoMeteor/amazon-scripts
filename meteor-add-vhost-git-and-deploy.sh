@@ -68,8 +68,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ ! -n "$1" ] ; then
   echo "Usage:"
-  echo "  $0 -u user -h FQDN [-r repo-address] [-d app-dir] [-t temp-dir] [-v]"
-  echo "  $0 --user user --host FQDN [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]"
+  echo "  `basename $0` -u user -h FQDN [-r repo-address] [-d app-dir] [-t temp-dir] [-v]"
+  echo "  `basename $0` --user user --host FQDN [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]"
   exit 0
 fi
 
