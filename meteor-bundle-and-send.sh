@@ -53,6 +53,7 @@ if [ $# -eq 0 ] ; then
   echo "  `basename $0` -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]"
   echo "  `basename $0` --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--verbose]"
   echo "This should be run from your development environment."
+  echo "Also, meteor-unbundle-and-deploy.sh should be in the remote user's path."
   exit 0
 fi
 
@@ -131,8 +132,7 @@ fi
 
 run meteor bundle ../$BUNDLE.tar.gz
 run scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
-run scp $KEYARG private/amazon/meteor-unbundle-and-deploy.sh $REMOTEUSER@$SERVER:
-run ssh $KEYARG $REMOTEUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
+run ssh $KEYARG $REMOTEUSER@$SERVER meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
 echo "Local tasks complete."

@@ -47,19 +47,11 @@ fi
 cd ~/www
 
 APP_DIR=`pwd`
-RESTART_ARGS=
-
-# Secure exit strategy
-function finito () {
-  rm ~/$BUNDLE.tar.gz
-  rm -rf $APP_DIR/tmp/
-}
-trap finito EXIT INT TERM
 
 # Parse command line arguments into variables
 while :
 do
-    case "$1" in
+    case ${1:-} in
       -b | --bundle)
     BUNDLE="$2"
     shift 2
@@ -79,13 +71,13 @@ do
 done
 
 # Validate required arguments
-if [ ! -n "$BUNDLE" ] ; then
+if [ ! -v BUNDLE ] ; then
   echo 'Bundle name is required.'
   exit 1
 fi
 
 # Check for verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 
