@@ -75,6 +75,8 @@ if [ -d $1 ] ; then
   APP_DIR=$1
   shift 1
   cd $APP_DIR
+else
+  APP_DIR=`pwd`
 fi
 
 if [ ! -d .meteor ] ; then
