@@ -75,14 +75,11 @@ if [ -d $1 ] ; then
   APP_DIR=$1
   shift 1
   cd $APP_DIR
-else
-  echo "You must be in, or supply, a valid Meteor app directory."
-  exit 1
 fi
 
 if [ ! -d .meteor ] ; then
   echo "You must be in, or supply, a valid Meteor app directory."
-  cd $OLDPWD
+  cd $ORIGIN
   exit 1
 fi
 
