@@ -115,7 +115,14 @@ fi
 # Validate temporary location
 if [ -d $TEMP_DIR ] ; then
   echo "Temporary directory $TEMP_DIR already exists, please remove or rename and try again."
-  exit 1
+  read -p "Would you like me to remove it and continue? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
+    rm -rf $TEMP_DIR
+  else
+    echo "Exiting without action."
+    exit 1
+  fi
 fi
 
 # Check for verbosity
