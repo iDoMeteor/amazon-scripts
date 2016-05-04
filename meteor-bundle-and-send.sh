@@ -3,8 +3,8 @@
 #
 #          FILE: meteor-bundle-and-send.sh
 #
-#         USAGE: meteor-bundle-and-send.sh -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]
-#                meteor-bundle-and-send.sh --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--verbose]
+#         USAGE: meteor-bundle-and-send.sh -u user -s server [-i keyfile.pem] [-b bundle-name] [-d source-dir] [-v]
+#                meteor-bundle-and-send.sh --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--dir source-dir] [--verbose]
 #
 #   DESCRIPTION: This script should generally be run on your development
 #                 machine from your application's root source directory.  It
@@ -23,6 +23,10 @@
 #                   The name of your bundle, <bundle-name>.tar.gz.
 #                   I recommend making them descriptive and versioned, so
 #                    that you can easily switch versions in emergencies.
+#                -d | --dir
+#                   Default: ./
+#                   Location of your app's source root (ie; contains .meteor)
+#                   If omitted, assumes that your PWD is that directory
 #                -i | --key
 #                   The SSH public key file for the given user and server.
 #                -s | --server

@@ -25,8 +25,8 @@
 #                 intended.
 #       OPTIONS:
 #                app-dir
-#                   Location of your app's Meteor root (ie; has contains .meteor)
-#                   If omitted, assumes that your pwd is that the app root
+#                   Location of your app's Meteor root (ie; contains .meteor)
+#                   If omitted, assumes that your PWD is that directory
 #                -t | --temp
 #                   Name of temp directory to create with meteor bundle -directory
 #                   Defaults to ~/www/tmp
