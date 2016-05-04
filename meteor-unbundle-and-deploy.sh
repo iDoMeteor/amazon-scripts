@@ -113,11 +113,15 @@ cd
 
 # End
 if [ -v PRE_EXIST ] ; then
+  echo ""
+  echo ""
   echo "This appears to be an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
   echo "After manually confirming the app is running, then remove ~/www/bundle.old."
 else
+  echo ""
+  echo ""
   echo "This appears to be the first app deployment, restart Nginx for changes to take affect."
 fi
 echo "Remote tasks complete.  App has been deployed."
-echo
+echo ""
 exit 0
