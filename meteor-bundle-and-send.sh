@@ -52,14 +52,14 @@ if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]"
   echo "  `basename $0` --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--verbose]"
-  echo "This should be run on your development environment."
+  echo "This should be run from your development environment."
   exit 0
 fi
 
 # Debug buffer
 function run()
 {
-  if [ -n $DEBUG ] ; then
+  if [ -v $DEBUG ] ; then
     echo "Running: $@"
   fi
   "$@"
@@ -68,7 +68,7 @@ function run()
 # Parse command line arguments into variables
 while :
 do
-    case "$1" in
+    case ${1:-} in
       -b | --bundle)
     BUNDLE="$2"
     shift 2
@@ -103,22 +103,22 @@ do
 done
 
 # Validate required arguments
-if [ ! -n "$REMOTEUSER" ] ; then
+if [ ! -v REMOTEUSER ] ; then
   echo "User is required."
   exit 1
 fi
-if [ ! -n "$SERVER" ] ; then
+if [ ! -v SERVER ] ; then
   echo "Server is required."
   exit 1
 fi
 
 # Set defaults if required
-if [ ! -n "$BUNDLE" ] ; then
+if [ ! -v BUNDLE ] ; then
   BUNDLE='bundle'
 fi
 
 # Check for verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 

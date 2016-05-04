@@ -81,7 +81,7 @@ if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -n newuser -h FQDN -u user -s server [-i key] [-b bundle-name] [-t temp-dir] [-v]"
   echo "  `basename $0` -new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--temp temp-dir] [--verbose]"
-  echo "This should be run on your development environment."
+  echo "This should be run from your development environment."
   exit 0
 fi
 

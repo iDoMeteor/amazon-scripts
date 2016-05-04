@@ -156,28 +156,11 @@ cd
 
 # End
 if [ -v PRIOR ] ; then
-  echo "This appears to have been an upgrade."
-  read -p "Would you like me to restart the Passenger process? [Y/n]" -n 1 -r REPLY
-  echo ""
-  if [[ $REPLY =~ ^[Yy\n]$ ]] ; then
-    sudo passenger-config restart-app $APP_DIR
-  else
-    echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
-    echo "Otherwise, Passenger will be serving your old version from memory."
-  fi
+  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+  echo "Otherwise, Passenger will be serving your old version from memory."
   echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
 else
-  echo "This appears to be the first deployment for this app."
-  read -p "Would you like me to restart Nginx for you? [Y/n]" -n 1 -r REPLY
-  echo ""
-  if [[ $REPLY =~ ^[Yy\n]$ ]] ; then
-    sudo service nginx restart
-  else
-    echo "If this is the application's first deployment, Nginx will need to be restarted."
-    echo "If this is an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
-    echo "Otherwise, Passenger will be serving your old version from memory."
-  fi
-  echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
+  echo "This appears to be the first deployment for this app, run 'sudo service nginx restart'."
 fi
 cd $ORIGIN
 echo
