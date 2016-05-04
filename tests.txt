@@ -56,9 +56,6 @@ meteor-bundle-and-deploy.sh ./app -t /tmp/apptest2
 meteor-bundle-and-deploy.sh # From app source root
 meteor-bundle-and-deploy.sh ./app
 
-
-
-
 #meteor-bundle-and-send.sh
 meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem -b package
 meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -d ./app

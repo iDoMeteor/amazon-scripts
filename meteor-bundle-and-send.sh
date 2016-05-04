@@ -58,17 +58,18 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
+# Check Node version
+NODE_VERSION=`node --version`
+if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
+  echo "You must bundle Meteor apps with Node version 0.10.4x."
+  echo "You are using Node version $NODE_VERSION, please correct this and try again."
+  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43'."
+  echo "Exiting without action."
+  exit 1
+fi
+
 # Save PWD
 ORIGIN=`pwd`
-
-# Debug buffer
-function run()
-{
-  if [ -v $DEBUG ] ; then
-    echo "Running: $@"
-  fi
-  "$@"
-}
 
 # Parse command line arguments into variables
 while :
@@ -81,9 +82,6 @@ do
       -d | --dir)
     SRC_DIR=$2
     shift 2
-    ;;
-      --debug)
-    DEBUG=true
     ;;
       -i | --key)
     KEYFILE=$2
@@ -149,15 +147,16 @@ if [ -v VERBOSE ] ; then
 fi
 
 # Check for keyfile
-if [[ -f $KEYFILE ]]; then
+if [[ -v KEYFILE && -f $KEYFILE ]]; then
   KEYARG="-i $KEYFILE"
 else
   KEYARG=
 fi
 
-run meteor bundle ../$BUNDLE.tar.gz
-run scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
-run ssh $KEYARG $REMOTEUSER@$SERVER meteor-unbundle-and-deploy.sh -b $BUNDLE
+echo "Preparing $BUNDLE.tar.gz"
+meteor bundle ../$BUNDLE.tar.gz
+scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
+ssh $KEYARG $REMOTEUSER@$SERVER meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
 cd $ORIGIN

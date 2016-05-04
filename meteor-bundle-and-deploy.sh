@@ -55,9 +55,6 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
-# Save PWD
-ORIGIN=`pwd`
-
 # Warn ec2-user or root
 ME=`whoami`
 if [[ $ME =~ ^(ec2-user|root)$ ]] ; then
@@ -69,6 +66,19 @@ if [[ $ME =~ ^(ec2-user|root)$ ]] ; then
     exit 1
   fi
 fi
+
+# Check Node version
+NODE_VERSION=`node --version`
+if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
+  echo "You must bundle Meteor apps with Node v0.10.4x."
+  echo "You are using Node $NODE_VERSION, please correct this and try again."
+  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43'."
+  echo "Exiting without action."
+  exit 1
+fi
+
+# Save PWD
+ORIGIN=`pwd`
 
 # Make sure we're working with a Meteor app
 if [ -d $1 ] ; then
@@ -130,6 +140,7 @@ if [ -v VERBOSE ] ; then
 fi
 
 # Bundle to temporary directory
+echo "Compiling bundle to $TEMP_DIR"
 meteor bundle --directory $TEMP_DIR
 
 # Install dependencies

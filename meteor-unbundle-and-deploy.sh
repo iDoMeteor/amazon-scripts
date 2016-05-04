@@ -102,7 +102,7 @@ fi
 
 # Switch directories, restart app
 cd $APP_DIR
-if [ -d ./tmp && -d bundle ] ; then
+if [[ -d ./tmp && -d bundle ]] ; then
   mv bundle bundle.old
   PRE_EXIST=true
 fi
@@ -114,7 +114,7 @@ cd
 # End
 echo "Remote tasks complete.  App has been deployed."
 echo
-if [ -n "$PRE_EXIST" ] ; then
+if [ -v PRE_EXIST ] ; then
   echo "This appears to be an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
   echo "After manually confirming the app is running, then remove ~/www/bundle.old."
 else
