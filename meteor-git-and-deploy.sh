@@ -101,7 +101,7 @@ do
     shift 1
     ;;
       -t | --temp)
-    TEMP_DIR=true
+    TEMP_DIR="$2"
     shift 1
     ;;
       -v | --verbose)
