@@ -189,7 +189,7 @@ mv $TEMP_DIR ./bundle
 
 # End
 if [ -v PRIOR ] ; then
-  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $APP_DIR' from the ec2-user account."
+  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $DIR' from the ec2-user account."
   echo "Otherwise, Passenger will be serving your old version from memory."
   echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
 else
