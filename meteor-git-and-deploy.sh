@@ -110,7 +110,7 @@ done
 # Set necessary defaults
 if [[ ! -v DIR && ! -d .git ]] ; then
   DIR=`pwd`
-else if [ ! -v DIR ] ; then
+elif [ ! -v DIR ] ; then
   DIR='app'
 fi
 if [ ! -v TEMP_DIR ] ; then
