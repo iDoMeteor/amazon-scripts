@@ -70,11 +70,15 @@ fi
 # Check Node version
 NODE_VERSION=`node --version`
 if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
-  echo "You must bundle Meteor apps with Node v0.10.4x."
+  echo "You should bundle Meteor apps with Node v0.10.4x."
   echo "You are using Node $NODE_VERSION, please correct this and try again."
-  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43'."
-  echo "Exiting without action."
-  exit 1
+  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43' using the ec2-user account."
+  read -p "Would you still like to try anyway? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Exiting without action."
+    exit 1
+  fi
 fi
 
 # Save PWD
@@ -166,11 +170,11 @@ cd
 
 # End
 if [ -v PRIOR ] ; then
-  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $APP_DIR' from the ec2-user account."
   echo "Otherwise, Passenger will be serving your old version from memory."
   echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
 else
-  echo "This appears to be the first deployment for this app, run 'sudo service nginx restart'."
+  echo "This appears to be the first deployment for this app, run 'sudo service nginx restart' from the ec2-user account."
 fi
 cd $ORIGIN
 echo

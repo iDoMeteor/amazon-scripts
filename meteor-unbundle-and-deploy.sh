@@ -47,6 +47,7 @@ fi
 cd ~/www
 
 APP_DIR=`pwd`
+ME=`whoami`
 
 # Parse command line arguments into variables
 while :
@@ -115,7 +116,7 @@ cd
 if [ -v PRE_EXIST ] ; then
   echo ""
   echo ""
-  echo "This appears to be an upgrade, run 'sudo passenger-config restart-app $APP_DIR'."
+  echo "This appears to be an upgrade, run 'sudo passenger-config restart-app /var/www/$ME'."
   echo "After manually confirming the app is running, then remove ~/www/bundle.old."
 else
   echo ""

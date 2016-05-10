@@ -74,16 +74,39 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
-# Secure exit strategy
-function finito () {
-  rm -rf $TEMP_DIR
-}
-trap finito EXIT INT TERM
+# Warn ec2-user or root
+ME=`whoami`
+if [[ $ME =~ ^(ec2-user|root)$ ]] ; then
+  echo "You probably want to run this as an app user, rather than $ME."
+  read -p "Would you still like to proceed? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Exiting without action."
+    exit 1
+  fi
+fi
+
+# Check Node version
+NODE_VERSION=`node --version`
+if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
+  echo "You should bundle Meteor apps with Node v0.10.4x."
+  echo "You are using Node $NODE_VERSION, please correct this and try again."
+  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43' using the ec2-user account."
+  read -p "Would you still like to try anyway? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Exiting without action."
+    exit 1
+  fi
+fi
+
+# Save PWD
+ORIGIN=`pwd`
 
 # Parse command line arguments into variables
 while :
 do
-    case "$1" in
+    case ${1:-} in
       -b | --bundle)
     BUNDLE="$2"
     shift 2
@@ -155,17 +178,6 @@ if [ -n "$VERBOSE" ] ; then
   set -v
 fi
 
-# Create Virtual Host
-if [ -d "/home/$USERNAME" ] ; then
-  echo "/home/$USERNAME exists, skipping nginx-add-meteor-vhost.sh"
-else
-  nginx-add-meteor-vhost.sh -u $USERNAME -h $HOST
-fi
-
-# Change to new user
-sudo su $USERNAME
-cd
-
 # Clone or pull
 if [ -d "$DIR" ] ; then
   cd "$DIR"
@@ -173,13 +185,14 @@ if [ -d "$DIR" ] ; then
   if [ -d .git ] ; then
     git pull
   else
-    echo "Directory exists but lacks .git/, cannot clone or pull."
-    cd
-    exit 1
+    git clone $REPO $DIR ./
   fi
 else
   git clone $REPO $DIR
+  cd $DIR
+  DIR=`pwd`
 fi
+
 
 # Check app is a Meteor app
 if [ ! -d .meteor ] ; then
@@ -198,8 +211,8 @@ npm install --production
 npm prune --production
 
 # Copy over persistent files for standalone mode, jic
-if [ -f "~/$DIR/bundle/Passengerfile.json" ]; then
-  cp "~/$DIR/bundle/Passengerfile.json" "$TEMP_DIR/tmp/bundle/"
+if [ -f "$DIR/bundle/Passengerfile.json" ]; then
+  cp "$DIR/bundle/Passengerfile.json" "$TEMP_DIR/tmp/bundle/"
 fi
 
 # Switch directories, restart app
@@ -210,13 +223,16 @@ if [ -d ./bundle ] ; then
 fi
 mv $TEMP_DIR ./bundle
 
-# Exit su environment
-exit
-
 # End
-echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  sudo service nginx restart
+if [ -v PRIOR ] ; then
+  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $APP_DIR' from the ec2-user account."
+  echo "Otherwise, Passenger will be serving your old version from memory."
+  echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
+else
+  echo "This appears to be the first deployment for this app, run 'sudo service nginx restart' from the ec2-user account."
 fi
+cd $ORIGIN
+echo
+echo "Tasks complete.  App has been deployed."
+echo
 exit 0

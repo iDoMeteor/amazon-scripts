@@ -36,7 +36,7 @@
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Node, Meteor, SSH/SCP, remote shell access
-#          BUGS: ---
+#          BUGS: Keyfile issues
 #         NOTES: ---
 #        AUTHOR: Jason White (Jason@iDoAWS.com),
 #  ORGANIZATION: @iDoAWS
@@ -61,11 +61,15 @@ fi
 # Check Node version
 NODE_VERSION=`node --version`
 if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
-  echo "You must bundle Meteor apps with Node version 0.10.4x."
-  echo "You are using Node version $NODE_VERSION, please correct this and try again."
-  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43'."
-  echo "Exiting without action."
-  exit 1
+  echo "You should bundle Meteor apps with Node v0.10.4x."
+  echo "You are using Node $NODE_VERSION, please correct this and try again."
+  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43' using the ec2-user account."
+  read -p "Would you still like to try anyway? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Exiting without action."
+    exit 1
+  fi
 fi
 
 # Save PWD

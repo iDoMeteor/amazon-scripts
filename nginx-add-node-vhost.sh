@@ -36,6 +36,7 @@
 #       CREATED: 04/15/2016 15:33
 #      REVISION:  001
 #          TODO: Add -s option to enable commented lines and do certificate work
+#                Add -n option for Node version
 #===============================================================================
 
 # Strict mode
