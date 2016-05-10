@@ -108,7 +108,9 @@ do
 done
 
 # Set necessary defaults
-if [ ! -v DIR ] ; then
+if [[ ! -v DIR && ! -d .git ]] ; then
+  DIR=`pwd`
+else if [ ! -v DIR ] ; then
   DIR='app'
 fi
 if [ ! -v TEMP_DIR ] ; then
@@ -128,7 +130,7 @@ fi
 
 # Ensure we have enough repository data to work with
 if [[ ! -d "$DIR/.git" && ! -v REPO ]] ; then
-  echo "Cannot clone or pull without a repository specified"
+  echo "Cannot clone or pull without a repository or directory specified."
   exit 1
 fi
 
