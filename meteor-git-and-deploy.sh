@@ -3,26 +3,10 @@
 #
 #          FILE: meteor-add-vhost-clone-and-deploy.sh
 #
-#         USAGE: meteor-add-vhost-clone-and-deploy.sh -u user -h FQDN [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
-#                meteor-add-vhost-clone-and-deploy.sh --user user --host FQDN [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-add-vhost-clone-and-deploy.sh [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
+#                meteor-add-vhost-clone-and-deploy.sh [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
 #
-#   DESCRIPTION:
-#             From nginx-add-meteor-vhost:
-#                This script will add a virtual host configuration file to
-#                 the Nginx sites-available/ directory and then creates a
-#                 symbolic link to that file in sites-enabled/.
-#                The file is named <host>.conf and will be configured to run
-#                 under the supplied user name using the app bundle in their
-#                 ~/www/bundle directory.  It will be handled by Passenger
-#                 and served on via regular HTTP on port 80.
-#               A user will be created and the home directory will have a
-#                 symblolic link named www (~/www/) that leads to their web
-#                 application directory, /var/www/<user>.  Note that on my
-#                 Amazon Meteor Server 1 AMI, /var/www/ is a symbolic link
-#                 to /opt/www/.
-#               The app will be given a Mongo database @ localhost:27017/<user>.
-#             Then:
-#               The script will change to the new user and clone the given repo
+#   DESCRIPTION: This script will change to the new user and clone the given repo
 #                 into their home directory, bundle it, install the node modules
 #                 and finally deploy it to the user's ~/www.
 #       OPTIONS:
@@ -34,22 +18,15 @@
 #                -d | --dir
 #                   Default = 'app'
 #                   Name of directory to clone your app into
-#                   Note: This is relative to the passed user's home directory
-#                -h | --host
-#                   * Required
-#                   The fully qualified domain name of the virtual host.
 #                -r | --repo
 #                   Default = NULL
 #                   A valid repository URI (https://github...x.git,
 #                     ssh://git@github.../app.git, etc).
-#                   If omitted, will attempt to 'git pull' rather than clone.
+#                   If omitted, will attempt to 'git pull' from the specified
+#                     directory or ./ rather than clone.
 #                -t | --temp
 #                   Defaults = '~/www/tmp'
 #                   Name of temp directory to create with meteor bundle -directory
-#                -u | --user
-#                   The name of the system account the host will be attributed to.
-#                   If their home directory already exists, vhost creation will
-#                     be skipped
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Nginx, Passenger, Node 0.10.43, Meteor locally installed, ~/www/.
@@ -68,8 +45,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -u user -h FQDN [-r repo-address] [-d app-dir] [-t temp-dir] [-v]"
-  echo "  `basename $0` --user user --host FQDN [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]"
+  echo "  `basename $0` [-r repo-address] [-d app-dir] [-t temp-dir] [-v]"
+  echo "  `basename $0` [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
@@ -115,10 +92,6 @@ do
     DIR="$2"
     shift 2
     ;;
-      -h | --host)
-    HOST="$2"
-    shift 2
-    ;;
       -r | --repo)
     REPO="$2"
     shift 2
@@ -130,10 +103,6 @@ do
       -t | --temp)
     TEMP_DIR=true
     shift 1
-    ;;
-      -u | --user)
-    USERNAME="$2"
-    shift 2
     ;;
       -v | --verbose)
     VERBOSE=true
@@ -149,21 +118,11 @@ do
     esac
 done
 
-# Validate required arguments
-if [ ! -n $USERNAME ] ; then
-  echo 'User name is required.'
-  exit 1
-fi
-if [ ! -n $HOST ] ; then
-  echo 'A valid hostname (FQDN) is required.'
-  exit 1
-fi
-
 # Set necessary defaults
-if [ ! -n "$DIR" ] ; then
+if [ ! -v DIR ] ; then
   DIR='app'
 fi
-if [ ! -n "$TEMP_DIR" ] ; then
+if [ ! -v TEMP_DIR ] ; then
   TEMP_DIR=~/www/tmp
 fi
 
@@ -174,14 +133,19 @@ if [ -d $TEMP_DIR ] ; then
 fi
 
 # Check verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
+fi
+
+# Ensure we have enough repository data to work with
+if [[ ! -d "$DIR/.git" && ! -v REPO ]] ; then
+  echo "Cannot clone or pull without a repository specified"
+  exit 1
 fi
 
 # Clone or pull
 if [ -d "$DIR" ] ; then
   cd "$DIR"
-  DIR=`pwd`
   if [ -d .git ] ; then
     git pull
   else
@@ -190,9 +154,9 @@ if [ -d "$DIR" ] ; then
 else
   git clone $REPO $DIR
   cd $DIR
-  DIR=`pwd`
 fi
 
+DIR=`pwd`
 
 # Check app is a Meteor app
 if [ ! -d .meteor ] ; then
@@ -234,5 +198,11 @@ fi
 cd $ORIGIN
 echo
 echo "Tasks complete.  App has been deployed."
+echo
+read -p "Would you still like to 'rm -rf' the source directory, $DIR? [y/N]" -n 1 -r REPLY
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]] ; then
+  rm -rf "$DIR"
+fi
 echo
 exit 0
