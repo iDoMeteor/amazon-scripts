@@ -21,10 +21,32 @@ remove-vhost-and-user.sh -u nodeintra -h nodeintranethost
 remove-vhost-and-user.sh -u noderootdomain -h noderoot.domain
 remove-vhost-and-user.sh -u nodesubdomain -h node.sub.domain
 
+#meteor-bundle-and-deploy.sh
+meteor-bundle-and-deploy.sh ./app -t /tmp/apptest2
+meteor-bundle-and-deploy.sh # From app source root
+meteor-bundle-and-deploy.sh ./app
+
+#meteor-bundle-and-send.sh
+meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem -b package
+meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -d ./app
+
+#meteor-unbundle-and-deploy.sh
+meteor-unbundle-and-deploy.sh -b test-bundle
+
+#update-amazon-tools.sh
+update-amazon-tools.sh
+
+#update-idometeor-scripts.sh
+update-idometeor-scripts.sh
 
 
 
-jkkj#meteor-add-vhost-bundle-and-send.sh
+
+
+
+
+
+#meteor-add-vhost-bundle-and-send.sh
 meteor-add-vhost-bundle-and-send.sh -n meteorintra -h meteorintranethost -u  ec2-user -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem #-d ~/XXX
 meteor-add-vhost-bundle-and-send.sh -n meteorrootdomain -h meteorroot.domain -u  ec2-user -s 52.200.31.195 -t /tmp/apptest
 meteor-add-vhost-bundle-and-send.sh -n meteorsubdomain -h meteor.sub.domain -u  ec2-user -s 52.200.31.195
@@ -47,40 +69,13 @@ remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
 
 
 
-
-
-
-
-#meteor-bundle-and-deploy.sh
-meteor-bundle-and-deploy.sh ./app -t /tmp/apptest2
-meteor-bundle-and-deploy.sh # From app source root
-meteor-bundle-and-deploy.sh ./app
-
-#meteor-bundle-and-send.sh
-meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem -b package
-meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -d ./app
-
-
-
-
 #meteor-git-and-deploy.sh
-meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder.git
-meteor-git-and-deploy.sh # TEST PULL VERSION WITH AN EXISTING REPO
+meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder.git -t /tmp/test -v
+meteor-git-and-deploy.sh -d OnePageWonder
+cd OnePageWonder && meteor-git-and-deploy.sh
 
 
 
-
-#meteor-unbundle-and-deploy.sh
-meteor-unbundle-and-deploy.sh -b test-bundle
-
-
-
-
-#update-amazon-tools.sh
-update-amazon-tools.sh
-
-#update-idometeor-scripts.sh
-update-idometeor-scripts.sh
 
 
 

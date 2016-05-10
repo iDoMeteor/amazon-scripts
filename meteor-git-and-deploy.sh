@@ -1,10 +1,10 @@
 #!/bin/bash
 #===============================================================================
 #
-#          FILE: meteor-add-vhost-clone-and-deploy.sh
+#          FILE: meteor-git-and-deploy.sh
 #
-#         USAGE: meteor-add-vhost-clone-and-deploy.sh [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
-#                meteor-add-vhost-clone-and-deploy.sh [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-git-and-deploy.sh [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
+#                meteor-git-and-deploy.sh [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
 #
 #   DESCRIPTION: This script will change to the new user and clone the given repo
 #                 into their home directory, bundle it, install the node modules
@@ -149,7 +149,7 @@ if [ -d "$DIR" ] ; then
   if [ -d .git ] ; then
     git pull
   else
-    git clone $REPO $DIR ./
+    git clone $REPO ./
   fi
 else
   git clone $REPO $DIR
