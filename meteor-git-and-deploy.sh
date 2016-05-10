@@ -3,15 +3,13 @@
 #
 #          FILE: meteor-git-and-deploy.sh
 #
-#         USAGE: meteor-git-and-deploy.sh [.] [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
-#                meteor-git-and-deploy.sh [.] [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-git-and-deploy.sh [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
+#                meteor-git-and-deploy.sh [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
 #
 #   DESCRIPTION: This script will change to the new user and clone the given repo
 #                 into their home directory, bundle it, install the node modules
 #                 and finally deploy it to the user's ~/www.
 #       OPTIONS:
-#                .
-#                   Used alone.  Clone or update to PWD and deploy.
 #                -d | --dir
 #                   Default = 'app'
 #                   Name of directory to clone your app into
@@ -108,9 +106,7 @@ do
 done
 
 # Set necessary defaults
-if [[ ! -v DIR && ! -d .git ]] ; then
-  DIR=`pwd`
-elif [ ! -v DIR ] ; then
+if [ ! -v DIR ] ; then
   DIR='app'
 fi
 if [ ! -v TEMP_DIR ] ; then
@@ -130,7 +126,7 @@ fi
 
 # Ensure we have enough repository data to work with
 if [[ ! -d "$DIR/.git" && ! -v REPO ]] ; then
-  echo "Cannot clone or pull without a repository or directory specified."
+  echo "Cannot clone or pull without a repository specified"
   exit 1
 fi
 
