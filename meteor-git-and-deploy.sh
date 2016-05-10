@@ -168,6 +168,9 @@ fi
 
 # Switch directories, restart app
 cd ~/www
+if [ -d ./bundle.old ] ; then
+  rm -rf bundle.old
+fi
 if [ -d ./bundle ] ; then
   mv bundle bundle.old
   PRIOR=true

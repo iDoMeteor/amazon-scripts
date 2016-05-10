@@ -72,7 +72,6 @@ remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
 #meteor-git-and-deploy.sh
 meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder.git -t /tmp/test -v
 meteor-git-and-deploy.sh -d OnePageWonder
-cd OnePageWonder && meteor-git-and-deploy.sh
 
 
 
