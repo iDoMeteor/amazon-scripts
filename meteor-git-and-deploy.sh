@@ -3,18 +3,15 @@
 #
 #          FILE: meteor-git-and-deploy.sh
 #
-#         USAGE: meteor-git-and-deploy.sh [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
-#                meteor-git-and-deploy.sh [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-git-and-deploy.sh [.] [-r repo-address] [-d app-dir] [-t temp-dir] [-v]
+#                meteor-git-and-deploy.sh [.] [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]
 #
 #   DESCRIPTION: This script will change to the new user and clone the given repo
 #                 into their home directory, bundle it, install the node modules
 #                 and finally deploy it to the user's ~/www.
 #       OPTIONS:
-#                -b | --bundle
-#                   Default = 'bundle'
-#                   The name of your bundle, <bundle-name>.tar.gz.
-#                   I recommend making them descriptive and versioned, so
-#                    that you can easily switch versions in emergencies.
+#                .
+#                   Used alone.  Clone or update to PWD and deploy.
 #                -d | --dir
 #                   Default = 'app'
 #                   Name of directory to clone your app into
@@ -84,10 +81,6 @@ ORIGIN=`pwd`
 while :
 do
     case ${1:-} in
-      -b | --bundle)
-    BUNDLE="$2"
-    shift 2
-    ;;
       -d | --dir)
     DIR="$2"
     shift 2
@@ -95,10 +88,6 @@ do
       -r | --repo)
     REPO="$2"
     shift 2
-    ;;
-      -s | --ssl)
-    SSL=true
-    shift 1
     ;;
       -t | --temp)
     TEMP_DIR="$2"
