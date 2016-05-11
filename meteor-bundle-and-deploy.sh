@@ -51,7 +51,7 @@ if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` [app-dir] [-t temp-dir] [-v]"
   echo "  `basename $0` [app-dir] [--temp temp-dir] [--verbose]"
-  echo "This should be run on your staging or production server."
+  echo "Environment: Server"
   exit 0
 fi
 

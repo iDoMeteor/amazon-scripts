@@ -81,15 +81,17 @@ if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -n newuser -h FQDN -u user -s server [-i key] [-b bundle-name] [-t temp-dir] [-v]"
   echo "  `basename $0` -new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--temp temp-dir] [--verbose]"
-  echo "This should be run from your development environment."
+  echo "Environment: Development"
   exit 0
 fi
 
 # Debug buffer
-function run()
-{
-  if [ -n $DEBUG ] ; then
-    echo "Running: $@"
+function run() {
+  if [[ $1 -eq true ]] ; then
+    shift 1
+    echo "Running: `sed "s/\w(.*)/$1" $@`"
+  else
+    shift 1
   fi
   "$@"
 }
@@ -97,7 +99,7 @@ function run()
 # Parse command line arguments into variables
 while :
 do
-    case "$1" in
+    case ${1:-} in
       -b | --bundle)
     BUNDLE="$2"
     shift 2
@@ -149,19 +151,19 @@ do
 done
 
 # Validate required arguments
-if [ ! -n $NEWUSER ] ; then
+if [ ! -v NEWUSER ] ; then
   echo 'A username is required for the vhost owner.'
   exit 1
 fi
-if [ ! -n $HOST ] ; then
+if [ ! -v HOST ] ; then
   echo 'A valid hostname (FQDN) is required.'
   exit 1
 fi
-if [ ! -n $REMOTEUSER ] ; then
+if [ ! -v REMOTEUSER ] ; then
   echo 'Remote username is required to login to $SERVER.'
   exit 1
 fi
-if [ ! -n "$SERVER" ] ; then
+if [ ! -v SERVER ] ; then
   echo "Server is required."
   exit 1
 fi
@@ -180,21 +182,18 @@ if [ ! -d .meteor ] ; then
 fi
 
 # Set necessary defaults
-if [ ! -n "$BUNDLE" ] ; then
+if [ ! -v BUNDLE ] ; then
   BUNDLE='bundle'
 fi
-if [ ! -n "$TEMP_DIR" ] ; then
+if [ ! -v DEBUG ] ; then
+  DEBUG=false
+fi
+if [ ! -v TEMP_DIR ] ; then
   TEMP_DIR=~/www/tmp
 fi
 
-# Validate temporary location
-if [ -d $TEMP_DIR ] ; then
-  echo "Temporary directory $TEMP_DIR already exists, please remove or rename and try again."
-  exit 1
-fi
-
 # Check verbosity
-if [ -n "$VERBOSE" ] ; then
+if [ -v VERBOSE ] ; then
   set -v
 fi
 
@@ -209,27 +208,17 @@ fi
 run meteor bundle ../$BUNDLE.tar.gz
 run ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST
 run scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
-if [ -f ~/amazon/scripts/meteor-unbundle-and-deploy.sh ] ; then
-  run scp $KEYARG ~/amazon/scripts/meteor-unbundle-and-deploy.sh $REMOTEUSER@$SERVER:
-elif [ -f ~/bin/meteor-unbundle-and-deploy.sh ] ; then
-  run scp $KEYARG ~/bin/meteor-unbundle-and-deploy.sh $REMOTEUSER@$SERVER:
-elif [ -f ./private/scripts/meteor-unbundle-and-deploy.sh ] ; then
-  run scp $KEYARG ./private/meteor-unbundle-and-deploy.sh $REMOTEUSER@$SERVER:
-else
-  echo "Could not find meteor-unbundle-and-deploy.sh, your package has not been deployed."
-  exit 1
-fi
 run ssh $KEYARG $REMOTEUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
 cd
-echo "Local tasks complete."
+echo "All tasks complete."
 read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  run ssh $KEYARG $REMOTEUSER@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+  run ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
 fi
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  run ssh $KEYARG $REMOTEUSER@$SERVER sudo service nginx restart
+  run ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
 fi
 exit 0

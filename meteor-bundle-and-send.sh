@@ -165,4 +165,15 @@ ssh $KEYARG $REMOTEUSER@$SERVER meteor-unbundle-and-deploy.sh -b $BUNDLE
 # End
 cd $ORIGIN
 echo "Local tasks complete."
+echo ""
+read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
+if [[ $REPLY =~ "^[Yy]$" ]] ; then
+  run ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+fi
+echo ""
+read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+if [[ $REPLY =~ "^[Yy]$" ]] ; then
+  run ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
+fi
+echo ""
 exit 0

@@ -30,6 +30,10 @@ meteor-bundle-and-deploy.sh ./app
 meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -i ~/.ssh/AmazonInstance1.pem -b package
 meteor-bundle-and-send.sh -u testuser -s 52.200.31.195 -d ./app
 
+#meteor-git-and-deploy.sh
+meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder.git -t /tmp/test -v
+meteor-git-and-deploy.sh -d OnePageWonder
+
 #meteor-unbundle-and-deploy.sh
 meteor-unbundle-and-deploy.sh -b test-bundle
 
@@ -68,10 +72,6 @@ meteor-add-vhost-git-and-deploy.sh -u meteorrootdomain -h meteorroot.domain # TE
 remove-vhost-and-user.sh -u meteorrootdomain -h meteorroot.domain
 
 
-
-#meteor-git-and-deploy.sh
-meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder.git -t /tmp/test -v
-meteor-git-and-deploy.sh -d OnePageWonder
 
 
 
