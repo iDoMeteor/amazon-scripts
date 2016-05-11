@@ -20,7 +20,7 @@
 #                 /etc/nginx/sites-available/, /etc/nginx/sites-enabled/,
 #                 /var/www/, sudo privileges.
 #          BUGS: ---
-#         NOTES: Nginx will be stopped and started while this executes.
+#         NOTES: ---
 #        AUTHOR: Jason White (Jason@iDoAWS.com),
 #  ORGANIZATION: @iDoAWS
 #       CREATED: 04/15/2016 15:33
@@ -97,9 +97,6 @@ if [ -v VERBOSE ] ; then
   set -v
 fi
 
-# Stop Nginx
-sudo service nginx stop
-
 # Remove files & directories
 if [ 0 -ne $(getent passwd $USERNAME | wc -l) ] ; then
   sudo userdel -rf $USERNAME
@@ -120,9 +117,11 @@ fi
 # Drop database
 sudo mongo $USERNAME --eval "db.dropDatabase()"
 
-# Start Nginx
-sudo service nginx start
-
 # End
-echo "Tasks complete."
+echo "Tasks complete.  Nginx probably needs to be restarted in order to take effect."
+read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]] ; then
+  sudo service nginx restart
+fi
 exit 0
