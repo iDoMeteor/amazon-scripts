@@ -97,10 +97,7 @@ if [ -v VERBOSE ] ; then
   set -v
 fi
 
-# Shred & remove
-if [ -d /home/$USERNAME ] ; then
-  sudo find /home/$USERNAME -type f -execdir sudo shred -fuz {} ;
-fi
+# Remove files & directories
 if [ 0 -ne $(getent passwd $USERNAME | wc -l) ] ; then
   sudo userdel -rf $USERNAME
 fi
@@ -108,13 +105,12 @@ if [ -d /home/$USERNAME ] ; then
   sudo rm -rf /home/$USERNAME
 fi
 if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
-  sudo rm /etc/nginx/sites-enabled/$HOST\.conf
+  sudo rm -f /etc/nginx/sites-enabled/$HOST\.conf
 fi
 if [ -f /etc/nginx/sites-available/$HOST\.conf ] ; then
-  sudo shred -fuz /etc/nginx/sites-available/$HOST\.conf
+  sudo rm -f /etc/nginx/sites-available/$HOST\.conf
 fi
 if [ -d /var/www/$USERNAME ] ; then
-  sudo find /var/www/$USERNAME -type f -execdir sudo shred -fuz {} ;
   sudo rm -rf /var/www/$USERNAME
 fi
 
