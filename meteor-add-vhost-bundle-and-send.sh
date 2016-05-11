@@ -3,8 +3,8 @@
 #
 #          FILE: meteor-add-vhost-bundle-and-send.sh
 #
-#         USAGE: meteor-add-vhost-bundle-and-send.sh -n newuser -h FQDN -u user  -s server [-i key] [-b bundle-name] [-d app-dir] [-t temp-dir] [-v] [--debug]
-#                meteor-add-vhost-bundle-and-send.sh --new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--dir app-dir] [--temp temp-dir] [--verbose] [--debug]
+#         USAGE: meteor-add-vhost-bundle-and-send.sh -n newuser -h FQDN -u user  -s server [-i key] [-b bundle-name] [-d app-dir] [-t temp-dir] [-v]
+#                meteor-add-vhost-bundle-and-send.sh --new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--dir app-dir] [--temp temp-dir] [--verbose]
 #
 #   DESCRIPTION:
 #             From nginx-add-meteor-vhost:
@@ -54,9 +54,6 @@
 #                   The remote user name to use when logging in with SSH.
 #                -v | --verbose
 #                   If passed, will show all commands executed.
-#                --debug
-#                   If passed, will print parsed command strings to STDOUT
-#                     before executing.
 #  REQUIREMENTS: Nginx, Passenger, Node 0.10.43, Meteor locally installed, ~/www/,
 #                 @iDoMeteor amazon-scripts installed in user paths on the remote
 #                 server as well as in ~/bin or ~/amazon/scripts on the local.
@@ -85,17 +82,6 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
-# Debug buffer
-function run() {
-  if [[ $1 -eq true ]] ; then
-    shift 1
-    echo "Running: `sed "s/\w(.*)/$1" $@`"
-  else
-    shift 1
-  fi
-  "$@"
-}
-
 # Parse command line arguments into variables
 while :
 do
@@ -107,10 +93,6 @@ do
       -d | --dir)
     DIR="$2"
     shift 2
-    ;;
-      --debug)
-    DEBUG=true
-    shift 1
     ;;
       -h | --host)
     HOST="$2"
@@ -185,9 +167,6 @@ fi
 if [ ! -v BUNDLE ] ; then
   BUNDLE='bundle'
 fi
-if [ ! -v DEBUG ] ; then
-  DEBUG=false
-fi
 if [ ! -v TEMP_DIR ] ; then
   TEMP_DIR=~/www/tmp
 fi
@@ -205,20 +184,20 @@ else
 fi
 
 # Bundle and send
-run meteor bundle ../$BUNDLE.tar.gz
-run ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST
-run scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
-run ssh $KEYARG $REMOTEUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
+meteor bundle ../$BUNDLE.tar.gz
+ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST
+scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
+ssh $KEYARG $REMOTEUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
 cd
 echo "All tasks complete."
 read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  run ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+  ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
 fi
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  run ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
+  ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
 fi
 exit 0
