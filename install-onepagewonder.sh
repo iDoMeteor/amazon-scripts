@@ -1,8 +1,2 @@
-# Run meteor-git-and-deploy.sh
-# Create virtual host & user
-
-# Change to new user
-
-# Clone OPW
-
-# Bundle and deploy
+#!/bin/bash
+/usr/local/bin/meteor-git-and-deploy.sh -r https://github.com/idometeor/onepagewonder -d onepagewonder

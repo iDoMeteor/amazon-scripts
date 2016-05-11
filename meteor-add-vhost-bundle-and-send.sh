@@ -82,6 +82,9 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
+# Save origin
+ORIGIN=`pwd`
+
 # Parse command line arguments into variables
 while :
 do
@@ -184,20 +187,25 @@ else
 fi
 
 # Bundle and send
+echo "Preparing to bundle your application."
 meteor bundle ../$BUNDLE.tar.gz
+echo "Preparing to create user and virtual host on server. Hit return after you see it."
 ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST
-scp $KEYARG ../$BUNDLE.tar.gz $REMOTEUSER@$SERVER:
-ssh $KEYARG $REMOTEUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
+echo "Preparing to copy bundle to server."
+scp $KEYARG ../$BUNDLE.tar.gz $NEWUSER@$SERVER:
+echo "Preparing to unbundle application on server."
+ssh $KEYARG $NEWUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 
 # End
-cd
+cd $ORIGIN
 echo "All tasks complete."
+echo "Server processes have probably not been affected."
 read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+  ssh $KEYARG $REMOTEUSER@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
 fi
 read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
 if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
+  ssh $KEYARG $REMOTEUSER@$SERVER sudo service nginx restart
 fi
 exit 0
