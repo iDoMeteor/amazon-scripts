@@ -152,15 +152,15 @@ done
 
 # Validate required arguments
 if [ ! -v NEWUSER ] ; then
-  echo 'A username is required for the vhost owner.'
+  echo "A username is required for the vhost owner."
   exit 1
 fi
 if [ ! -v HOST ] ; then
-  echo 'A valid hostname (FQDN) is required.'
+  echo "A valid hostname (FQDN) is required."
   exit 1
 fi
 if [ ! -v REMOTEUSER ] ; then
-  echo 'Remote username is required to login to $SERVER.'
+  echo "Remote username is required to login to $SERVER."
   exit 1
 fi
 if [ ! -v SERVER ] ; then
