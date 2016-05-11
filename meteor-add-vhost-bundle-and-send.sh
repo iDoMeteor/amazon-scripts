@@ -198,7 +198,7 @@ if [ -v VERBOSE ] ; then
 fi
 
 # Check for keyfile
-if [[ -f $KEYFILE ]]; then
+if [[ -v KEYFILE && -f $KEYFILE ]]; then
   KEYARG="-i $KEYFILE"
 else
   KEYARG=
