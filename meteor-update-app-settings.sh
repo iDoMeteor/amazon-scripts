@@ -94,14 +94,6 @@ if [ ! -v HOST ] ; then
   echo 'Host name is required.'
   exit 1
 fi
-if [ -f /etc/nginx/sites-available/$HOST\.conf ] ; then
-  echo 'Virtual host configuration already exists.'
-  exit 1
-fi
-if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
-  echo 'Virtual host configuration is already enabled.'
-  exit 1
-fi
 if [[ -v SETTINGS_FILE && -f $SETTINGS_FILE ]] ; then
   SETTINGS=`cat $SETTINGS_FILE | tr -d '\n'`
   SETTINGS=${SETTINGS//\'/\\\'}
