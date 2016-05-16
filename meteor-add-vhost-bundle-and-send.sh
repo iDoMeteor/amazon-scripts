@@ -82,8 +82,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -n newuser -h FQDN -u user -s server [-i key] [-b bundle-name] [-t temp-dir] [-s <settings>.json] [-f] [-v]"
-  echo "  `basename $0` -new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--temp temp-dir] [--settings <settings>.json] [--force] [--verbose]"
+  echo "  `basename $0` -n newuser -h FQDN -u user -r remoteserver [-i key] [-b bundle-name] [-t temp-dir] [-s <settings>.json] [-f] [-v]"
+  echo "  `basename $0` -new newuser --host FQDN --user user --remote remoteserver [--key key] [--bundle bundle-name] [--temp temp-dir] [--settings <settings>.json] [--force] [--verbose]"
   echo "Environment: Development"
   exit 0
 fi
@@ -183,9 +183,9 @@ else
 fi
 
 # Make sure we're working with a Meteor app
-if [ -d $DIR ] ; then
+if [[ -v DIR && -d $DIR ]] ; then
   cd $DIR
-else
+elif [[ -v DIR && ! -d $DIR ]] ; then
   echo "You must be in, or supply, a valid Meteor app directory."
   exit 1
 fi
@@ -218,12 +218,12 @@ fi
 # Bundle and send
 echo "Preparing to bundle your application."
 meteor bundle ../$BUNDLE.tar.gz
-if [ -n $SETTINGS ] ; then
+if [ -n "$SETTINGS" ] ; then
   echo "Transferring settings file to server."
-  scp `basename $SETTINGS_FILE` $REMOTEUSER@$SERVER:
+  scp $SETTINGS_FILE $REMOTEUSER@$SERVER:
 fi
-echo "Preparing to create user and virtual host on server. Hit return after you see it."
-ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST $SETTINGS $FORCE
+echo "Preparing to create user and virtual host on server."
+ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST $SETTINGS --force
 echo "Preparing to copy bundle to server."
 scp $KEYARG ../$BUNDLE.tar.gz $NEWUSER@$SERVER:
 echo "Preparing to unbundle application on server."
@@ -232,7 +232,7 @@ ssh $KEYARG $NEWUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 # End
 cd $ORIGIN
 echo "All tasks complete."
-if [ $FORCE -eq '--force' ] ; then
+if [[ '--force' = $FORCE ]] ; then
     ssh $KEYARG $REMOTEUSER@$SERVER sudo service nginx restart
 else
   echo "Server processes have probably not been affected."

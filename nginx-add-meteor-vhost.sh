@@ -175,7 +175,7 @@ echo "server {
 sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.conf
 
 # End
-echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
+echo "Virtual host tasks complete.  Nginx will need to be restarted in order to take effect."
 if [ -v FORCE ] ; then
     sudo service nginx restart
 else
