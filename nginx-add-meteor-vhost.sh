@@ -1,10 +1,10 @@
 #!/bin/bash -
 #===============================================================================
 #
-#          FILE: nginx-add-meteor-vhost
+#          FILE: nginx-add-meteor-vhost.sh
 #
-#         USAGE: nginx-add-meteor-vhost -u user -h host [-s <settings>.json] [-f] [-v]
-#                nginx-add-meteor-vhost --user user --host host [--settings <settings>.json] [--force] [--verbose]
+#         USAGE: nginx-add-meteor-vhost.sh -u user -h host [-s <settings>.json] [-f] [-v]
+#                nginx-add-meteor-vhost.sh --user user --host host [--settings <settings>.json] [--force] [--verbose]
 #
 #   DESCRIPTION: This script will add a virtual host configuration file to
 #                 the Nginx sites-available/ directory and then creates a

@@ -3,8 +3,8 @@
 #
 #          FILE: remove-vhost-and-user.sh
 #
-#         USAGE: remove-vhost-and-user.sh -u user -h host [-v]
-#                remove-vhost-and-user.sh --user user --host host [--verbose]
+#         USAGE: remove-vhost-and-user.sh -u user -h host [-f] [-v]
+#                remove-vhost-and-user.sh --user user --host host [--force] [--verbose]
 #
 #   DESCRIPTION: This script will remove a virtual host file, it's symbolically
 #                 linked vhost file, the given user, their directory from
@@ -35,18 +35,22 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -u user -h host [-v]"
-  echo "  `basename $0` --user user --host host [--verbose]"
+  echo "  `basename $0` -u user -h host [-f] [-v]"
+  echo "  `basename $0` --user user --host host [--force] [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
 
-# User warning follows parameter assessment and validation
+# FYI: User warning follows parameter assessment and validation
 
 # Parse command line arguments into variables
 while :
 do
     case ${1:-} in
+      -f | --force)
+    FORCE=true
+    shift 1
+    ;;
       -h | --host)
     HOST="$2"
     shift 2
@@ -85,11 +89,15 @@ fi
 
 # Confirm that the user really wants to do this
 echo "This script will *eradicate* all traces of this user and associated resources."
-read -p "Are you sure you wish to remove $USERNAME, their web directory *and* database? [y/N] " -n 1 -r REPLY
-echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
-  echo "Exiting without action."
-  exit 1
+if [ -v FORCE ] ; then
+    echo "Proceeding without confirmation."
+else
+  read -p "Are you sure you wish to remove $USERNAME, their web directory *and* database? [y/N] " -n 1 -r REPLY
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Exiting without action."
+    exit 1
+  fi
 fi
 
 # Check verbosity
@@ -119,9 +127,13 @@ sudo mongo $USERNAME --eval "db.dropDatabase()"
 
 # End
 echo "Tasks complete.  Nginx probably needs to be restarted in order to take effect."
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]] ; then
-  sudo service nginx restart
+if [ -v FORCE ] ; then
+    sudo service nginx restart
+else
+  read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
+    sudo service nginx restart
+  fi
 fi
 exit 0

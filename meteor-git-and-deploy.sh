@@ -13,6 +13,9 @@
 #                -d | --dir
 #                   Default = 'app'
 #                   Name of directory to clone your app into
+#                -f | --force
+#                   Passing the force flag will automatically remove the cloned
+#                     source code repository.
 #                -r | --repo
 #                   Default = NULL
 #                   A valid repository URI (https://github...x.git,
@@ -40,8 +43,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` [-r repo-address] [-d app-dir] [-t temp-dir] [-v]"
-  echo "  `basename $0` [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--verbose]"
+  echo "  `basename $0` [-r repo-address] [-d app-dir] [-t temp-dir] [-f] [-v]"
+  echo "  `basename $0` [--repo repo-address] [--dir app-dir] [--temp temp-dir] [--force] [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
@@ -82,6 +85,10 @@ do
       -d | --dir)
     DIR="$2"
     shift 2
+    ;;
+      -f | --force)
+    FORCE=true
+    shift 1
     ;;
       -r | --repo)
     REPO="$2"
@@ -189,10 +196,14 @@ cd $ORIGIN
 echo
 echo "Tasks complete.  App has been deployed."
 echo
-read -p "Would you still like to 'rm -rf' the source directory, $DIR? [y/N]" -n 1 -r REPLY
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]] ; then
+if [ -v FORCE ] ; then
   rm -rf "$DIR"
+else
+  read -p "Would you still like to 'rm -rf' the source directory, $DIR? [y/N]" -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
+    rm -rf "$DIR"
+  fi
 fi
 echo
 exit 0

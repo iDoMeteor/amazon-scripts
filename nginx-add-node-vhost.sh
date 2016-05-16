@@ -3,8 +3,8 @@
 #
 #          FILE: nginx-add-node-vhost
 #
-#         USAGE: nginx-add-node-vhost -u user -h host [-v]
-#                nginx-add-node-vhost --user user --host host [--verbose]
+#         USAGE: nginx-add-node-vhost -u user -h host [-f] [-v]
+#                nginx-add-node-vhost --user user --host host [--force] [--verbose]
 #
 #   DESCRIPTION: This script will add a virtual host configuration file to
 #                 the Nginx sites-available/ directory and then creates a
@@ -20,10 +20,13 @@
 #                 to /opt/www/.
 #               The app will be given a Mongo database @ localhost:27017/<user>.
 #       OPTIONS:
-#                -u | --user
-#                   The name of the system account the host will be attributed to.
+#                -f | --force
+#                   Passing the force flag will suppress the prompt to restart
+#                     nginx and just do it.
 #                -h | --host
 #                   The fully qualified domain name of the virtual host.
+#                -u | --user
+#                   The name of the system account the host will be attributed to.
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Nginx, Passenger, Node 0.10.40 managed by N, Mongo, ~/www/,
@@ -46,8 +49,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -u user -h host [-v]"
-  echo "  `basename $0` --user user --host host [--verbose]"
+  echo "  `basename $0` -u user -h host [-f] [-v]"
+  echo "  `basename $0` --user user --host host [--force] [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
@@ -56,6 +59,10 @@ fi
 while :
 do
     case ${1:-} in
+      -f | --force)
+    FORCE=true
+    shift 1
+    ;;
       -h | --host)
     HOST="$2"
     shift 2
@@ -152,9 +159,13 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 
 # End
 echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]] ; then
-  sudo service nginx restart
+if [ -v FORCE ] ; then
+    sudo service nginx restart
+else
+  read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
+    sudo service nginx restart
+  fi
 fi
 exit 0

@@ -3,8 +3,8 @@
 #
 #          FILE: meteor-bundle-and-send.sh
 #
-#         USAGE: meteor-bundle-and-send.sh -u user -s server [-i keyfile.pem] [-b bundle-name] [-d source-dir] [-v]
-#                meteor-bundle-and-send.sh --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--dir source-dir] [--verbose]
+#         USAGE: meteor-bundle-and-send.sh -u user -s server [-i keyfile.pem] [-b bundle-name] [-d source-dir] [-f] [-v]
+#                meteor-bundle-and-send.sh --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--dir source-dir] [--force] [--verbose]
 #
 #   DESCRIPTION: This script should generally be run on your development
 #                 machine from your application's root source directory.  It
@@ -51,8 +51,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -u user -s server [-i keyfile.pem] [-b bundle-name] [-v]"
-  echo "  `basename $0` --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--verbose]"
+  echo "  `basename $0` -u user -s server [-i keyfile.pem] [-b bundle-name] [-f] [-v]"
+  echo "  `basename $0` --user user --server server [--key keyfile.pem] [--bundle bundle-name] [--force] [--verbose]"
   echo "This should be run from your development environment."
   echo "Also, meteor-unbundle-and-deploy.sh should be in the remote user's path."
   exit 0
@@ -86,6 +86,10 @@ do
       -d | --dir)
     SRC_DIR=$2
     shift 2
+    ;;
+      -f | --force)
+    FORCE=true
+    shift 1
     ;;
       -i | --key)
     KEYFILE=$2
@@ -166,14 +170,18 @@ ssh $KEYARG $REMOTEUSER@$SERVER meteor-unbundle-and-deploy.sh -b $BUNDLE
 cd $ORIGIN
 echo "Local tasks complete."
 echo ""
-read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  run ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+if [ -v FORCE ] ; then
+    ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
+else
+  read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ "^[Yy]$" ]] ; then
+    ssh $KEYARG ec2-user@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+  fi
+  read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ "^[Yy]$" ]] ; then
+    ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
+  fi
 fi
-echo ""
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  run ssh $KEYARG ec2-user@$SERVER sudo service nginx restart
-fi
-echo ""
 exit 0
