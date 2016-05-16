@@ -6,7 +6,9 @@
 #         USAGE: meteor-update-nginx-app-settings.sh -u username -h host -s <settings>.json [-f] [-v]
 #                meteor-update-nginx-app-settings.sh --user username --host host --settings <settings>.json [--force] [--verbose]
 #
-#   DESCRIPTION: XXX
+#   DESCRIPTION: This script will replace (or create) the virtual host file in
+#                 Nginx's sites-available folder, using the settings file passed
+#                 from the command line.
 #       OPTIONS:
 #                -f | --force
 #                   Passing the force flag will suppress the prompt to restart
