@@ -3,8 +3,8 @@
 #
 #          FILE: nginx-add-meteor-vhost
 #
-#         USAGE: nginx-add-meteor-vhost -u user -h host [-v]
-#                nginx-add-meteor-vhost --user user --host host [--verbose]
+#         USAGE: nginx-add-meteor-vhost -u user -h host [-s <settings>.json] [-f] [-v]
+#                nginx-add-meteor-vhost --user user --host host [--settings <settings>.json] [--force] [--verbose]
 #
 #   DESCRIPTION: This script will add a virtual host configuration file to
 #                 the Nginx sites-available/ directory and then creates a
@@ -20,10 +20,15 @@
 #                 to /opt/www/.
 #               The app will be given a Mongo database @ localhost:27017/<user>.
 #       OPTIONS:
-#                -u | --user
-#                   The name of the system account the host will be attributed to.
+#                -f | --force
+#                   Passing the force flag will suppress the prompt to restart
+#                     nginx and just do it.
 #                -h | --host
 #                   The fully qualified domain name of the virtual host.
+#                -s | --settings
+#                   XXX
+#                -u | --user
+#                   The name of the system account the host will be attributed to.
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Nginx, Passenger, Node 0.10.40 managed by N, Mongo, ~/www/,
@@ -35,7 +40,7 @@
 #  ORGANIZATION: @iDoAWS
 #       CREATED: 04/15/2016 15:33
 #      REVISION:  001
-#          TODO: Add -s option to enable commented lines and do certificate work
+#          TODO: Add -S option to enable commented lines and do SSL work
 #===============================================================================
 
 # Strict mode
@@ -55,11 +60,19 @@ fi
 while :
 do
     case ${1:-} in
+      -f | --force)
+    FORCE=true
+    shift 1
+    ;;
       -h | --host)
     HOST="$2"
     shift 2
     ;;
-      -s | --ssl)
+      -s | --settings)
+    SETTINGS_FILE="$2"
+    shift 2
+    ;;
+      -S | --ssl)
     SSL=true
     shift 1
     ;;
@@ -81,7 +94,7 @@ do
     esac
 done
 
-# Validate required arguments
+# Validate arguments
 if [ ! -v USERNAME ] ; then
   echo 'User name is required.'
   exit 1
@@ -103,12 +116,20 @@ if [ ! -v HOST ] ; then
   exit 1
 fi
 if [ -f /etc/nginx/sites-available/$HOST\.conf ] ; then
-  echo 'Virtual host configuration is already available.'
+  echo 'Virtual host configuration already exists.'
   exit 1
 fi
 if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
   echo 'Virtual host configuration is already enabled.'
   exit 1
+fi
+if [[ -v SETTINGS_FILE && -f $SETTINGS_FILE ]] ; then
+  SETTINGS=`< $SETTINGS_FILE`
+elif [[ -v SETTINGS_FILE && ! -f $SETTINGS_FILE ]] ; then
+  echo "Settings file $SETTINGS_FILE not found."
+  exit 1
+else
+  SETTINGS=""
 fi
 
 # Check verbosity
@@ -118,8 +139,6 @@ fi
 
 # Add $USERNAME and setup home dir
 sudo adduser $USERNAME
-#TODO: Make a --superuser option?
-#sudo adduser $USERNAME -G wheel
 sudo mkdir /home/$USERNAME/.ssh
 sudo mkdir /var/www/$USERNAME
 sudo cp ~/.ssh/authorized_keys /home/$USERNAME/.ssh/
@@ -143,7 +162,7 @@ echo "server {
 
     passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
     passenger_env_var ROOT_URL http://$HOST;
-    # passenger_env_var METEOR_SETTINGS ./settings.json
+    passenger_env_var METEOR_SETTINGS $SETTINGS
 
     # ssl_certificate      /etc/ssl/$HOST.crt;
     # ssl_certificate_key  /etc/ssl/$HOST.key;
@@ -155,9 +174,13 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 
 # End
 echo "Tasks complete.  Nginx will need to be restarted in order to take effect."
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]] ; then
-  sudo service nginx restart
+if [ -v FORCE ] ; then
+    sudo service nginx restart
+else
+  read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
+    sudo service nginx restart
+  fi
 fi
 exit 0
