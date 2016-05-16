@@ -124,7 +124,7 @@ if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
   exit 1
 fi
 if [[ -v SETTINGS_FILE && -f $SETTINGS_FILE ]] ; then
-  SETTINGS=`cat $SETTINGS_FILE`
+  SETTINGS=`cat $SETTINGS_FILE | tr -d '\n'`
 elif [[ -v SETTINGS_FILE && ! -f $SETTINGS_FILE ]] ; then
   echo "Settings file $SETTINGS_FILE not found."
   exit 1
