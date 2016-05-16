@@ -124,7 +124,7 @@ if [ -L /etc/nginx/sites-enabled/$HOST\.conf ] ; then
   exit 1
 fi
 if [[ -v SETTINGS_FILE && -f $SETTINGS_FILE ]] ; then
-  SETTINGS=`< $SETTINGS_FILE`
+  SETTINGS=`cat $SETTINGS_FILE`
 elif [[ -v SETTINGS_FILE && ! -f $SETTINGS_FILE ]] ; then
   echo "Settings file $SETTINGS_FILE not found."
   exit 1
@@ -165,7 +165,7 @@ echo "server {
 
     passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
     passenger_env_var ROOT_URL http://$HOST;
-    passenger_env_var METEOR_SETTINGS $SETTINGS
+    passenger_env_var METEOR_SETTINGS $SETTINGS;
 
 }" | sudo tee /etc/nginx/sites-available/$HOST.conf
 
