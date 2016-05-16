@@ -50,8 +50,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -u user -h host [-v]"
-  echo "  `basename $0` --user user --host host [--verbose]"
+  echo "  `basename $0` -u user -h host [-s <settings>.json] [-f] [-v]"
+  echo "  `basename $0` --user user --host host [--settings <settings>.json] [--force] [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
@@ -160,12 +160,12 @@ echo "server {
     passenger_nodejs /usr/local/n/versions/node/0.10.43/bin/node;
     passenger_sticky_sessions on;
 
-    passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
-    passenger_env_var ROOT_URL http://$HOST;
-    passenger_env_var METEOR_SETTINGS $SETTINGS
-
     # ssl_certificate      /etc/ssl/$HOST.crt;
     # ssl_certificate_key  /etc/ssl/$HOST.key;
+
+    passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
+    passenger_env_var ROOT_URL http://$HOST;
+    passenger_env_var METEOR_SETTINGS "\n$SETTINGS"
 
 }" | sudo tee /etc/nginx/sites-available/$HOST.conf
 
