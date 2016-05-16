@@ -26,7 +26,8 @@
 #                -h | --host
 #                   The fully qualified domain name of the virtual host.
 #                -s | --settings
-#                   XXX
+#                   Location of your app's JSON settings file, which will then
+#                     be inserted into the Nginx configuration file.
 #                -u | --user
 #                   The name of the system account the host will be attributed to.
 #                -v | --verbose

@@ -3,8 +3,8 @@
 #
 #          FILE: meteor-add-vhost-bundle-and-send.sh
 #
-#         USAGE: meteor-add-vhost-bundle-and-send.sh -n newuser -h FQDN -u user  -s server [-i key] [-b bundle-name] [-d app-dir] [-t temp-dir] [-v]
-#                meteor-add-vhost-bundle-and-send.sh --new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--dir app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-add-vhost-bundle-and-send.sh -n newuser -h FQDN -u user  -r remoteserver [-i key] [-b bundle-name] [-d app-dir] [-t temp-dir] [-s <settings>.json] [-f] [-v]
+#                meteor-add-vhost-bundle-and-send.sh --new newuser --host FQDN --user user --remote remoteserver [--key key] [--bundle bundle-name] [--dir app-dir] [--temp temp-dir] [--settings <settings>.json] [--force] [--verbose]
 #
 #   DESCRIPTION:
 #             From nginx-add-meteor-vhost:
@@ -35,6 +35,9 @@
 #                   Default = ./
 #                   Location of your app's Meteor root (ie; has contains .meteor)
 #                   If omitted, assumes that your pwd is that the app root
+#                -f | --force
+#                   Passing the force flag will suppress the prompt to restart
+#                     nginx and just do it.
 #                -h | --host
 #                   * Required
 #                   The fully qualified domain name of the virtual host.
@@ -45,8 +48,11 @@
 #                     attributed to.
 #                   If their home directory already exists, vhost creation will
 #                     be skipped
-#                -s | --server
+#                -r | --remote
 #                   The fully qualified domain name of the remote server.
+#                -s | --settings
+#                   Location of your app's JSON settings file, which will then
+#                     be inserted into the Nginx configuration file.
 #                -t | --temp
 #                   Defaults = '~/www/tmp'
 #                   Name of temp directory to create with meteor bundle -directory
@@ -76,8 +82,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -n newuser -h FQDN -u user -s server [-i key] [-b bundle-name] [-t temp-dir] [-v]"
-  echo "  `basename $0` -new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--temp temp-dir] [--verbose]"
+  echo "  `basename $0` -n newuser -h FQDN -u user -s server [-i key] [-b bundle-name] [-t temp-dir] [-s <settings>.json] [-f] [-v]"
+  echo "  `basename $0` -new newuser --host FQDN --user user --server server [--key key] [--bundle bundle-name] [--temp temp-dir] [--settings <settings>.json] [--force] [--verbose]"
   echo "Environment: Development"
   exit 0
 fi
@@ -97,6 +103,10 @@ do
     DIR="$2"
     shift 2
     ;;
+      -f | --force)
+    FORCE="--force"
+    shift 1
+    ;;
       -h | --host)
     HOST="$2"
     shift 2
@@ -109,9 +119,17 @@ do
     NEWUSER="$2"
     shift 2
     ;;
-      -s | --server)
+      -r | --remote)
     SERVER=$2
     shift 2
+    ;;
+      -s | --settings)
+    SETTINGS_FILE="$2"
+    shift 2
+    ;;
+      -S | --ssl)
+    SSL=true
+    shift 1
     ;;
       -t | --temp)
     TEMP_DIR=true
@@ -140,6 +158,9 @@ if [ ! -v NEWUSER ] ; then
   echo "A username is required for the vhost owner."
   exit 1
 fi
+if [ ! -v FORCE ] ; then
+  FORCE=""
+fi
 if [ ! -v HOST ] ; then
   echo "A valid hostname (FQDN) is required."
   exit 1
@@ -151,6 +172,14 @@ fi
 if [ ! -v SERVER ] ; then
   echo "Server is required."
   exit 1
+fi
+if [[ -v SETTINGS_FILE && -f $SETTINGS_FILE ]] ; then
+  SETTINGS="--settings ~/` basename $SETTINGS_FILE`"
+elif [[ -v SETTINGS_FILE && ! -f $SETTINGS_FILE ]] ; then
+  echo "Settings file $SETTINGS_FILE not found."
+  exit 1
+else
+  SETTINGS=""
 fi
 
 # Make sure we're working with a Meteor app
@@ -189,8 +218,12 @@ fi
 # Bundle and send
 echo "Preparing to bundle your application."
 meteor bundle ../$BUNDLE.tar.gz
+if [ -n $SETTINGS ] ; then
+  echo "Transferring settings file to server."
+  scp `basename $SETTINGS_FILE` $REMOTEUSER@$SERVER:
+fi
 echo "Preparing to create user and virtual host on server. Hit return after you see it."
-ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST
+ssh $KEYARG $REMOTEUSER@$SERVER bash nginx-add-meteor-vhost.sh -u $NEWUSER -h $HOST $SETTINGS $FORCE
 echo "Preparing to copy bundle to server."
 scp $KEYARG ../$BUNDLE.tar.gz $NEWUSER@$SERVER:
 echo "Preparing to unbundle application on server."
@@ -199,13 +232,17 @@ ssh $KEYARG $NEWUSER@$SERVER bash meteor-unbundle-and-deploy.sh -b $BUNDLE
 # End
 cd $ORIGIN
 echo "All tasks complete."
-echo "Server processes have probably not been affected."
-read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  ssh $KEYARG $REMOTEUSER@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
-fi
-read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
-if [[ $REPLY =~ "^[Yy]$" ]] ; then
-  ssh $KEYARG $REMOTEUSER@$SERVER sudo service nginx restart
+if [ $FORCE -eq '--force' ] ; then
+    ssh $KEYARG $REMOTEUSER@$SERVER sudo service nginx restart
+else
+  echo "Server processes have probably not been affected."
+  read -p "Would you like me to restart the app's Passenger process for you? [y/N] " -n 1 -r REPLY
+  if [[ $REPLY =~ "^[Yy]$" ]] ; then
+    ssh $KEYARG $REMOTEUSER@$SERVER sudo sudo passenger-config restart-app /var/www/$NEWUSER/
+  fi
+  read -p "Would you like me to restart Nginx for you? [y/N] " -n 1 -r REPLY
+  if [[ $REPLY =~ "^[Yy]$" ]] ; then
+    ssh $KEYARG $REMOTEUSER@$SERVER sudo service nginx restart
+  fi
 fi
 exit 0
