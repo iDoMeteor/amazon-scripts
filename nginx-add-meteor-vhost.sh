@@ -165,7 +165,7 @@ echo "server {
 
     passenger_env_var MONGO_URL mongodb://localhost:27017/$USERNAME;
     passenger_env_var ROOT_URL http://$HOST;
-    passenger_env_var METEOR_SETTINGS '"$SETTINGS"'
+    passenger_env_var METEOR_SETTINGS $SETTINGS
 
 }" | sudo tee /etc/nginx/sites-available/$HOST.conf
 
