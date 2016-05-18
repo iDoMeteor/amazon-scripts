@@ -106,6 +106,7 @@ sudo rm /etc/nginx/sites-enabled/$HOST.conf
 sudo rm /etc/nginx/sites-available/$HOST.conf
 
 # Finish
+echo "Starting Nginx."
 sudo service nginx start
 echo "Gitlab has been removed."
 exit 0

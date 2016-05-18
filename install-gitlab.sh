@@ -118,6 +118,8 @@ if [ -v MM_URL ] ; then
 echo "
 ## Enable Mattermost
 mattermost_external_url '$MM_URL'
+mattermost['enable'] = true
+mattermost_nginx['enable'] = false
 " | sudo tee -a /etc/gitlab/gitlab.rb
 fi
 
@@ -230,6 +232,49 @@ server {
 }" | sudo tee /etc/nginx/sites-available/$HOST.conf
 sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.conf
 
+# Mattermost
+if [ -v MM_URL ] ; then
+echo "upstream gitlab_mattermost {
+  server $URL:80;
+}
+
+server {
+  listen *:80;
+  server_name $MM_HOST;
+  server_tokens off;
+
+  client_max_body_size 250m;
+  server_tokens off;     # don't show the version number, a security best practice
+
+  access_log  /opt/nginx/logs/$MM_HOST\_access.log;
+  error_log   /opt/nginx/logs/$MM_HOST\__error.log;
+
+  location / {
+    ## If you use HTTPS make sure you disable gzip compression
+    ## to be safe against BREACH attack.
+
+    proxy_read_timeout      300;
+    proxy_connect_timeout   300;
+    proxy_redirect          off;
+
+    # Do not buffer Git HTTP responses
+    proxy_buffering off;
+
+    proxy_set_header    Host                \$http_host;
+    proxy_set_header    X-Real-IP           \$remote_addr;
+    proxy_set_header    X-Forwarded-For     \$proxy_add_x_forwarded_for;
+    proxy_set_header    X-Forwarded-Proto   \$scheme;
+    proxy_set_header   X-Frame-Options   SAMEORIGIN;
+
+    proxy_pass http://gitlab-workhorse;
+
+    proxy_pass http://gitlab_mattermost;
+  }
+
+}" | sudo tee /etc/nginx/sites-available/$MM_HOST.conf
+sudo ln -s /etc/nginx/sites-available/$MM_HOST.conf /etc/nginx/sites-enabled/$MM_HOST.conf
+fi
+
 # Add Nginx user to gitlab-www
 sudo usermod -aG gitlab-www nginx
 
@@ -239,4 +284,8 @@ sudo service nginx restart
 echo
 echo "Gitlab has been successfully installed, visit the URL below to get started!"
 echo "$URL"
+if [ -v MM_URL ] ; then
+  echo "Mattermost has also been successfully installed, visit the URL below to chat!"
+  echo "$MM_URL"
+fi
 echo
