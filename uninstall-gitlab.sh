@@ -28,7 +28,7 @@
 #===============================================================================
 
 # Strict mode
-set -euo pipefail
+set -uo pipefail
 IFS=$'\n\t'
 
 # Check for arguments or provide help
@@ -94,7 +94,14 @@ else
   sudo gitlab-ctl uninstall
 fi
 sudo yum remove gitlab-ce -y
+sudo userdel -rf git
+sudo userdel -rf gitlab-redis
+sudo userdel -rf gitlab-psql
+sudo userdel -rf gitlab-www
+sudo userdel -rf mattermost
+sudo rm -rf /opt/gitlab
 sudo rm -rf /etc/gitlab
+sudo rm -rf /var/log/gitlab
 sudo rm /etc/nginx/sites-enabled/$HOST.conf
 sudo rm /etc/nginx/sites-available/$HOST.conf
 
