@@ -222,7 +222,7 @@ server {
 
   error_page 502 /502.html;
 }" | sudo tee /etc/nginx/sites-available/$HOST.conf
-sudo ln -s /etc/nginx/sites-enabled/$HOST.conf /etc/nginx/sites-available/$HOST.conf
+sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.conf
 
 # Add Nginx user to gitlab-www
 sudo usermod -aG gitlab-www nginx
