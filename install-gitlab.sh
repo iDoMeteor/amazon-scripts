@@ -235,6 +235,7 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 # Mattermost
 if [ -v MM_URL ] ; then
 echo "upstream gitlab_mattermost {
+  # server unix://var/opt/gitlab/gitlab-workhorse/socket fail_timeout=0;
   server $HOST:80;
 }
 
@@ -243,7 +244,7 @@ server {
   server_name $MM_HOST;
   server_tokens off;
 
-  client_max_body_size 250m;
+  client_max_body_size 50m;
 
   access_log  /opt/nginx/logs/$MM_HOST-access.log;
   error_log   /opt/nginx/logs/$MM_HOST-error.log;
@@ -259,6 +260,8 @@ server {
     # Do not buffer Git HTTP responses
     proxy_buffering off;
 
+    proxy_set_header    Upgrade             \$http_upgrade;
+    proxy_set_header    Connection          "upgrade";
     proxy_set_header    Host                \$http_host;
     proxy_set_header    X-Real-IP           \$remote_addr;
     proxy_set_header    X-Forwarded-For     \$proxy_add_x_forwarded_for;
