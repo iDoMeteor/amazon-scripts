@@ -235,8 +235,7 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 # Mattermost
 if [ -v MM_URL ] ; then
 echo "upstream gitlab_mattermost {
-  # server unix://var/opt/gitlab/gitlab-workhorse/socket fail_timeout=0;
-  server $HOST:80;
+  server unix://tmp/gitlab-socket-23498ruasetrjAER fail_timeout=0;
 }
 
 server {
