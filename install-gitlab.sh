@@ -139,8 +139,8 @@ server {
 
   client_max_body_size 250m;
 
-  access_log  /opt/nginx/logs/$HOST\_access.log;
-  error_log   /opt/nginx/logs/$HOST\__error.log;
+  access_log  /opt/nginx/logs/$HOST_access.log;
+  error_log   /opt/nginx/logs/$HOST_error.log;
 
   # Ensure Passenger uses the bundled Ruby version
   passenger_ruby /opt/gitlab/embedded/bin/ruby;
@@ -235,7 +235,7 @@ sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.
 # Mattermost
 if [ -v MM_URL ] ; then
 echo "upstream gitlab_mattermost {
-  server $URL:80;
+  server $HOST:80;
 }
 
 server {
@@ -244,10 +244,9 @@ server {
   server_tokens off;
 
   client_max_body_size 250m;
-  server_tokens off;     # don't show the version number, a security best practice
 
-  access_log  /opt/nginx/logs/$MM_HOST\_access.log;
-  error_log   /opt/nginx/logs/$MM_HOST\__error.log;
+  access_log  /opt/nginx/logs/$MM_HOST_access.log;
+  error_log   /opt/nginx/logs/$MM_HOST_error.log;
 
   location / {
     ## If you use HTTPS make sure you disable gzip compression
@@ -264,9 +263,7 @@ server {
     proxy_set_header    X-Real-IP           \$remote_addr;
     proxy_set_header    X-Forwarded-For     \$proxy_add_x_forwarded_for;
     proxy_set_header    X-Forwarded-Proto   \$scheme;
-    proxy_set_header   X-Frame-Options   SAMEORIGIN;
-
-    proxy_pass http://gitlab-workhorse;
+    proxy_set_header    X-Frame-Options     SAMEORIGIN;
 
     proxy_pass http://gitlab_mattermost;
   }
