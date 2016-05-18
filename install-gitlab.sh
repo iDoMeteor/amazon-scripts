@@ -139,8 +139,8 @@ server {
 
   client_max_body_size 250m;
 
-  access_log  /opt/nginx/logs/$HOST_access.log;
-  error_log   /opt/nginx/logs/$HOST_error.log;
+  access_log  /opt/nginx/logs/$HOST-access.log;
+  error_log   /opt/nginx/logs/$HOST-error.log;
 
   # Ensure Passenger uses the bundled Ruby version
   passenger_ruby /opt/gitlab/embedded/bin/ruby;
@@ -245,8 +245,8 @@ server {
 
   client_max_body_size 250m;
 
-  access_log  /opt/nginx/logs/$MM_HOST_access.log;
-  error_log   /opt/nginx/logs/$MM_HOST_error.log;
+  access_log  /opt/nginx/logs/$MM_HOST-access.log;
+  error_log   /opt/nginx/logs/$MM_HOST-error.log;
 
   location / {
     ## If you use HTTPS make sure you disable gzip compression
