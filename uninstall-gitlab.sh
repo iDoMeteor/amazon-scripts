@@ -96,6 +96,7 @@ else
   sudo gitlab-ctl uninstall
 fi
 sudo yum remove gitlab-ce -y
+sudo rm -rf /etc/gitlab
 sudo rm /etc/nginx/sites-enabled/$HOST.conf
 sudo rm /etc/nginx/sites-available/$HOST.conf
 

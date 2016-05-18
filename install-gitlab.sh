@@ -96,7 +96,7 @@ fi
 curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
 
 # Run Yum installer
-sudo yum install gitlab-ce
+sudo yum install gitlab-ce -y
 
 # Configure Gitlab to use our pre-existing services
 # http://docs.gitlab.com/omnibus/settings/nginx.html#using-an-existing-passengernginx-installation
