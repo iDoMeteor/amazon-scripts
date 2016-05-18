@@ -102,6 +102,7 @@ curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/scrip
 
 # Run Yum installer
 sudo yum install gitlab-ce -y
+sudo gitlab-ctl reconfigure
 
 # Configure Gitlab to use our pre-existing services
 # http://docs.gitlab.com/omnibus/settings/nginx.html#using-an-existing-passengernginx-installation
