@@ -86,7 +86,6 @@ fi
 
 
 # Do it
-sudo gitlab-ctl stop
 sudo gitlab-ctl uninstall
 if [ -v ALL ] ; then
   sudo gitlab-ctl cleanse
