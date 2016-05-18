@@ -131,8 +131,8 @@ server {
 
   client_max_body_size 250m;
 
-  access_log  /var/log/gitlab/nginx/gitlab_access.log;
-  error_log   /var/log/gitlab/nginx/gitlab_error.log;
+  access_log  /opt/nginx/logs/$HOST\_access.log;
+  error_log   /opt/nginx/logs/$HOST\__error.log;
 
   # Ensure Passenger uses the bundled Ruby version
   passenger_ruby /opt/gitlab/embedded/bin/ruby;

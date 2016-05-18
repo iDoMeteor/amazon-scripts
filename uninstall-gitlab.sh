@@ -43,7 +43,7 @@ fi
 
 # Confirm that the user really wants to do this
 read -p "Are you sure you wish to remove Gitlab? [y/N] " -n 1 -r REPLY
-if [[ ! $REPLY =~ ^[Yy]$ ]]
+if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
   exit 0
 fi
 
