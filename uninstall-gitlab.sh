@@ -3,8 +3,8 @@
 #
 #          FILE: uninstall-gitlab.sh
 #
-#         USAGE: uninstall-gitlab.sh -h hostname [-a] [-v]
-#                uninstall-gitlab.sh --host hostname [--all] [--verbose]
+#         USAGE: uninstall-gitlab.sh -h hostname [-m hostname] [-a] [-v]
+#                uninstall-gitlab.sh --host hostname [--mm hostname] [--all] [--verbose]
 #
 #   DESCRIPTION: This script will uninstall Gitlab and it's virutal host files.
 #                 If the all flag is passed, all the data and users associated
@@ -86,13 +86,11 @@ fi
 
 
 # Do it
+echo "Stopping Nginx."
+sudo nginx service stop
 if [ -v ALL ] ; then
-  sudo gitlab-ctl stop
-  sudo gitlab-ctl remove-accounts
   sudo gitlab-ctl cleanse
 else
-  sudo gitlab-ctl stop
-  sudo gitlab-ctl remove-accounts
   sudo gitlab-ctl uninstall
 fi
 sudo yum remove gitlab-ce -y
@@ -101,6 +99,6 @@ sudo rm /etc/nginx/sites-enabled/$HOST.conf
 sudo rm /etc/nginx/sites-available/$HOST.conf
 
 # Finish
-sudo service nginx restart
+sudo service nginx start
 echo "Gitlab has been removed."
 exit 0
