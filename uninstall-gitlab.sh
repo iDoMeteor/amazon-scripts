@@ -59,6 +59,10 @@ do
     HOST="$2"
     shift 2
     ;;
+      -m | --mm)
+    MM_HOST="$2"
+    shift 2
+    ;;
       -v | --verbose)
     VERBOSE=true
     shift 1
@@ -104,6 +108,10 @@ sudo rm -rf /etc/gitlab
 sudo rm -rf /var/log/gitlab
 sudo rm /etc/nginx/sites-enabled/$HOST.conf
 sudo rm /etc/nginx/sites-available/$HOST.conf
+if [ -v MM_HOST ] ; then
+  sudo rm /etc/nginx/sites-enabled/$MM_HOST.conf
+  sudo rm /etc/nginx/sites-available/$MM_HOST.conf
+fi
 
 # Finish
 echo "Starting Nginx."
