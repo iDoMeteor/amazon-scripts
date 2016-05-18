@@ -92,6 +92,11 @@ if [ -v VERBOSE ] ; then
   set -v
 fi
 
+# Remove pre-existing config if it exists
+if [ -f /etc/gitlab/gitlab.rb ] ; then
+  sudo rm -rf /etc/gitlab/gitlab.rb
+fi
+
 # Check for Gitlab Repo
 curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
 

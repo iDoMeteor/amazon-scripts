@@ -87,7 +87,7 @@ fi
 
 # Do it
 echo "Stopping Nginx."
-sudo nginx service stop
+sudo service nginx stop
 if [ -v ALL ] ; then
   sudo gitlab-ctl cleanse
 else
