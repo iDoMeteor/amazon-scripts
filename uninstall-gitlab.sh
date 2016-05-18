@@ -86,10 +86,14 @@ fi
 
 
 # Do it
-sudo gitlab-ctl uninstall
 if [ -v ALL ] ; then
-  sudo gitlab-ctl cleanse
+  sudo gitlab-ctl stop
   sudo gitlab-ctl remove-accounts
+  sudo gitlab-ctl cleanse
+else
+  sudo gitlab-ctl stop
+  sudo gitlab-ctl remove-accounts
+  sudo gitlab-ctl uninstall
 fi
 sudo yum remove gitlab-ce -y
 sudo rm /etc/nginx/sites-enabled/$HOST.conf
