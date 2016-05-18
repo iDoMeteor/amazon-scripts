@@ -6,8 +6,10 @@
 #         USAGE: install-gitlab.sh -h hostname [-m hostname] [-v]
 #                install-gitlab.sh --host hostname [--mm hostname] [--verbose]
 #
-#   DESCRIPTION: This script will add a virtual host configuration file to
-#                 XXX
+#   DESCRIPTION: This script will install Gitlab into /opt, and be made
+#                 accessible via the hostname provided.  The Mattermost chat
+#                 server will also be installed if you provide a hostname for
+#                 it.
 #       OPTIONS:
 #                -h | --host
 #                   The fully qualified domain name of the virtual host you wish
