@@ -3,8 +3,8 @@
 #
 #          FILE: install-gitlab.sh
 #
-#         USAGE: install-gitlab.sh -h hostname [-m hostname] [-v]
-#                install-gitlab.sh --host hostname [--mm hostname] [--verbose]
+#         USAGE: install-gitlab.sh -h hostname [-v]
+#                install-gitlab.sh --host hostname [--verbose]
 #
 #   DESCRIPTION: This script will install Gitlab into /opt, and be made
 #                 accessible via the hostname provided.  The Mattermost chat
@@ -14,10 +14,6 @@
 #                -h | --host
 #                   The fully qualified domain name of the virtual host you wish
 #                     to use to access GitLab.
-#                -m | --mm
-#                   The fully qualified domain name of the virtual host you wish
-#                     to use to access Mattermost chat server.  If not supplied,
-#                     Mattermost will not be enabled.
 #                -v | --verbose
 #                   If passed, will show all commands executed.
 #  REQUIREMENTS: Nginx, Passenger, Yum
@@ -36,8 +32,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` -h hostname [-m hostname] [-v]"
-  echo "  `basename $0` --host host name [--mm hostname] [--verbose]"
+  echo "  `basename $0` -h hostname [-v]"
+  echo "  `basename $0` --host host name [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
@@ -48,10 +44,6 @@ do
     case ${1:-} in
       -h | --host)
     HOST="$2"
-    shift 2
-    ;;
-      -m | --mm)
-    MM_HOST="$2"
     shift 2
     ;;
       -v | --verbose)
@@ -74,9 +66,6 @@ if [ ! -v HOST ] ; then
   exit 1
 else
   URL="http://$HOST"
-fi
-if [ -v MM_HOST ] ; then
-  MM_URL="http://$MM_HOST"
 fi
 if [ -f /etc/nginx/sites-available/$HOST\.conf ] ; then
   echo 'Virtual host configuration already exists.'
@@ -110,18 +99,10 @@ echo "
 ## Disable internal servers
 nginx['enable'] = false
 unicorn['enable'] = false
+
+## Set URL
 gitlab_rails['internal_api_url'] = '$URL'
 " | sudo tee -a /etc/gitlab/gitlab.rb
-
-# Mattermost
-if [ -v MM_URL ] ; then
-echo "
-## Enable Mattermost
-mattermost_external_url '$MM_URL'
-mattermost['enable'] = true
-mattermost_nginx['enable'] = false
-" | sudo tee -a /etc/gitlab/gitlab.rb
-fi
 
 # Recompile Gitlab
 sudo gitlab-ctl reconfigure
@@ -232,48 +213,6 @@ server {
 }" | sudo tee /etc/nginx/sites-available/$HOST.conf
 sudo ln -s /etc/nginx/sites-available/$HOST.conf /etc/nginx/sites-enabled/$HOST.conf
 
-# Mattermost
-if [ -v MM_URL ] ; then
-echo "upstream gitlab_mattermost {
-  server unix://tmp/gitlab-socket-23498ruasetrjAER fail_timeout=0;
-}
-
-server {
-  listen *:80;
-  server_name $MM_HOST;
-  server_tokens off;
-
-  client_max_body_size 50m;
-
-  access_log  /opt/nginx/logs/$MM_HOST-access.log;
-  error_log   /opt/nginx/logs/$MM_HOST-error.log;
-
-  location / {
-    ## If you use HTTPS make sure you disable gzip compression
-    ## to be safe against BREACH attack.
-
-    proxy_read_timeout      300;
-    proxy_connect_timeout   300;
-    proxy_redirect          off;
-
-    # Do not buffer Git HTTP responses
-    proxy_buffering off;
-
-    proxy_set_header    Upgrade             \$http_upgrade;
-    proxy_set_header    Connection          "upgrade";
-    proxy_set_header    Host                \$http_host;
-    proxy_set_header    X-Real-IP           \$remote_addr;
-    proxy_set_header    X-Forwarded-For     \$proxy_add_x_forwarded_for;
-    proxy_set_header    X-Forwarded-Proto   \$scheme;
-    proxy_set_header    X-Frame-Options     SAMEORIGIN;
-
-    proxy_pass http://gitlab_mattermost;
-  }
-
-}" | sudo tee /etc/nginx/sites-available/$MM_HOST.conf
-sudo ln -s /etc/nginx/sites-available/$MM_HOST.conf /etc/nginx/sites-enabled/$MM_HOST.conf
-fi
-
 # Add Nginx user to gitlab-www
 sudo usermod -aG gitlab-www nginx
 
@@ -283,8 +222,4 @@ sudo service nginx restart
 echo
 echo "Gitlab has been successfully installed, visit the URL below to get started!"
 echo "$URL"
-if [ -v MM_URL ] ; then
-  echo "Mattermost has also been successfully installed, visit the URL below to chat!"
-  echo "$MM_URL"
-fi
 echo

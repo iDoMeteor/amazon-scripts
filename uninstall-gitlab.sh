@@ -3,8 +3,8 @@
 #
 #          FILE: uninstall-gitlab.sh
 #
-#         USAGE: uninstall-gitlab.sh -h hostname [-m hostname] [-a] [-v]
-#                uninstall-gitlab.sh --host hostname [--mm hostname] [--all] [--verbose]
+#         USAGE: uninstall-gitlab.sh -h hostname [-a] [-v]
+#                uninstall-gitlab.sh --host hostname [--all] [--verbose]
 #
 #   DESCRIPTION: This script will uninstall Gitlab and it's virutal host files.
 #                 If the all flag is passed, all the data and users associated
@@ -59,10 +59,6 @@ do
     HOST="$2"
     shift 2
     ;;
-      -m | --mm)
-    MM_HOST="$2"
-    shift 2
-    ;;
       -v | --verbose)
     VERBOSE=true
     shift 1
@@ -102,16 +98,11 @@ sudo userdel -rf git
 sudo userdel -rf gitlab-redis
 sudo userdel -rf gitlab-psql
 sudo userdel -rf gitlab-www
-sudo userdel -rf mattermost
 sudo rm -rf /opt/gitlab
 sudo rm -rf /etc/gitlab
 sudo rm -rf /var/log/gitlab
 sudo rm /etc/nginx/sites-enabled/$HOST.conf
 sudo rm /etc/nginx/sites-available/$HOST.conf
-if [ -v MM_HOST ] ; then
-  sudo rm /etc/nginx/sites-enabled/$MM_HOST.conf
-  sudo rm /etc/nginx/sites-available/$MM_HOST.conf
-fi
 
 # Finish
 echo "Starting Nginx."
