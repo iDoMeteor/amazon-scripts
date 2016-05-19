@@ -33,7 +33,7 @@ IFS=$'\n\t'
 if [ $# -eq 0 ] ; then
   echo "Usage:"
   echo "  `basename $0` -h hostname [-v]"
-  echo "  `basename $0` --host host name [--verbose]"
+  echo "  `basename $0` --host hostname [--verbose]"
   echo "This should be run on your staging or production server."
   exit 0
 fi
