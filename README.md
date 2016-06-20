@@ -23,6 +23,10 @@ Remote scripts:
 
 Coming Soon:
 * install-gitlab
+* mongo-backup-full-db
+* mongo-backup-user-db
+* mongo-restore-full-db
+* mongo-restore-user-db
 * route53-add-domains
 * route53-delete-domains
 * route53-list-domains

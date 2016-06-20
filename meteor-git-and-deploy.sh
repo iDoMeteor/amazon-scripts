@@ -199,7 +199,7 @@ echo
 if [ -v FORCE ] ; then
   rm -rf "$DIR"
 else
-  read -p "Would you still like to 'rm -rf' the source directory, $DIR? [y/N]" -n 1 -r REPLY
+  read -p "Would you like to 'rm -rf' the source directory, $DIR? [y/N]" -n 1 -r REPLY
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]] ; then
     rm -rf "$DIR"

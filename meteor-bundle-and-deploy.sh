@@ -3,8 +3,8 @@
 #
 #          FILE: meteor-bundle-and-deploy.sh
 #
-#         USAGE: meteor-bundle-and-deploy.sh [app-dir] [-t temp-dir] [-v]
-#                meteor-bundle-and-deploy.sh [app-dir] [--temp temp-dir] [--verbose]
+#         USAGE: meteor-bundle-and-deploy.sh app-dir [-t temp-dir] [-v]
+#                meteor-bundle-and-deploy.sh app-dir [--temp temp-dir] [--verbose]
 #
 #   DESCRIPTION: This script should be run in your production or staging
 #                 environment, which already contains the source for your
@@ -49,8 +49,8 @@ IFS=$'\n\t'
 # Check for arguments or provide help
 if [ $# -eq 0 ] ; then
   echo "Usage:"
-  echo "  `basename $0` [app-dir] [-t temp-dir] [-v]"
-  echo "  `basename $0` [app-dir] [--temp temp-dir] [--verbose]"
+  echo "  `basename $0` app-dir [-t temp-dir] [-v]"
+  echo "  `basename $0` app-dir [--temp temp-dir] [--verbose]"
   echo "Environment: Server"
   exit 0
 fi
@@ -161,6 +161,9 @@ fi
 # Switch directories, restart app
 cd ~/www
 if [ -d ./bundle ] ; then
+  if [ -d ./bundle.old ] ; then
+    rm -rf bundle.old
+  fi
   mv bundle bundle.old
   PRIOR=true
 fi

@@ -103,7 +103,10 @@ fi
 
 # Switch directories, restart app
 cd $APP_DIR
-if [[ -d ./tmp && -d bundle ]] ; then
+if [[ -d tmp && -d bundle ]] ; then
+  if [ -d bundle.old ] ; then
+    rm -rf bundle.old
+  fi
   mv bundle bundle.old
   PRE_EXIST=true
 fi
