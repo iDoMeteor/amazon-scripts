@@ -186,7 +186,7 @@ mv $TEMP_DIR ./bundle
 
 # End
 if [ -v PRIOR ] ; then
-  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app $DIR' from the ec2-user account."
+  echo "This appears to have been an upgrade, run 'sudo passenger-config restart-app /var/www/$ME' from the ec2-user account."
   echo "Otherwise, Passenger will be serving your old version from memory."
   echo "After manually confirming the app is running, archive & remove ~/www/bundle.old."
 else
@@ -204,12 +204,6 @@ else
   if [[ $REPLY =~ ^[Yy]$ ]] ; then
     rm -rf "$DIR"
   fi
-fi
-if [ -v FORCE ] ; then
-    sudo service nginx restart
-else
-  echo "You will need to run the following command from ec2-user to restart the app process!"
-  echo "sudo passenger-config restart-app /var/www/$ME/"
 fi
 echo
 exit 0
