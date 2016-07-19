@@ -205,5 +205,11 @@ else
     rm -rf "$DIR"
   fi
 fi
+if [ -v FORCE ] ; then
+    sudo service nginx restart
+else
+  echo "You will need to run the following command from ec2-user to restart the app process!"
+  echo "sudo passenger-config restart-app /var/www/$ME/"
+fi
 echo
 exit 0
