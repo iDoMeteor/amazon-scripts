@@ -68,18 +68,18 @@ if [[ $ME =~ ^(ec2-user|root)$ ]] ; then
 fi
 
 # Check Node version
-NODE_VERSION=`node --version`
-if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
-  echo "You should bundle Meteor apps with Node v0.10.4x."
-  echo "You are using Node $NODE_VERSION, please correct this and try again."
-  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43' using the ec2-user account."
-  read -p "Would you still like to try anyway? [y/N]" -n 1 -r REPLY
-  echo ""
-  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
-    echo "Exiting without action."
-    exit 1
-  fi
-fi
+#NODE_VERSION=`node --version`
+#if [[ ! $NODE_VERSION =~ ^v0\.10\.4 ]] ; then
+#  echo "You should bundle Meteor apps with Node v0.10.4x."
+#  echo "You are using Node $NODE_VERSION, please correct this and try again."
+#  echo "You may switch to the tested & installed Meteor-friendly version with 'sudo n 0.10.43' using the ec2-user account."
+#  read -p "Would you still like to try anyway? [y/N]" -n 1 -r REPLY
+#  echo ""
+#  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+#    echo "Exiting without action."
+#    exit 1
+#  fi
+#fi
 
 # Save PWD
 ORIGIN=`pwd`
