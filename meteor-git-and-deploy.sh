@@ -165,8 +165,8 @@ meteor bundle --directory $TEMP_DIR
 # Install dependencies
 cd $TEMP_DIR
 cd programs/server
-npm install --production
-npm prune --production
+meteor npm install --production
+meteor npm prune --production
 
 # Copy over persistent files for standalone mode, jic
 if [ -f "$DIR/bundle/Passengerfile.json" ]; then
